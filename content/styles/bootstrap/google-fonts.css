@@ -1,0 +1,12 @@
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 700;
+  src: url(/styles/bootstrap/google-playfair700.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 900;
+  src: url(/styles/bootstrap/google-playfair700.ttf) format('truetype');
+}

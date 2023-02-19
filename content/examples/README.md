@@ -6,14 +6,6 @@ Luvit provides asynchronous I/O for Lua, similar to Node.js.
 
 Place your new content into the `content` folder.
 
-Luvit Links
------------
-
-* [Documentation](https://luvit.io/)
-* [Github](https://github.com/luvit/luvit)
-* [Coderwall](https://coderwall.com/p/gkokaw/luvit-node-s-ziggy-stardust)
-
-
 TLDR
 ----
 
@@ -29,6 +21,15 @@ restart-server
 server-status
 stop-server
 ```
+
+
+Luvit Links
+-----------
+
+* [Documentation](https://luvit.io/)
+* [Github](https://github.com/luvit/luvit)
+* [Coderwall](https://coderwall.com/p/gkokaw/luvit-node-s-ziggy-stardust)
+
 
 Build Docker Image
 ------------------
@@ -59,6 +60,33 @@ docker run -d -p $DOCKER_HOST_PORT:$DOCKER_CONTAINER_PORT \
 ## Verify container is running
 docker ps
 ```
+
+As a side note, the syntax hightlighting css and js files are from highlight.js
+and are hosted and served here by this luvit web server, shown in the head of
+this html file.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>index.html - Home Page</title>
+  <link rel="stylesheet" type="text/css" href="markdown.css">
+
+<!--
+  <link rel="stylesheet"
+        href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+-->
+
+  <link rel="stylesheet" href="/styles/highlight/default.min.css">
+  <script src="/styles/highlight//highlight.min.js"></script>
+
+  <script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body>
+```
+
 
 Use Docker Container
 --------------------
