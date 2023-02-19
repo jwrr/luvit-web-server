@@ -18,7 +18,7 @@
 </head>
 <body>
 
-{GetMarkdown}
+{page_markdown}
 
 </body>
 </html>

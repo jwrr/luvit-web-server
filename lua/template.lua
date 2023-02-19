@@ -5,8 +5,8 @@ local template = {}
 
 function template.replace(req, res, urlFields, templateName)
   local templateMap = {
-    GetPath = urlFields.urlFileName,
-    GetMarkdown = urlFields.markdown
+    page_url = urlFields.urlFileName,
+    page_markdown = urlFields.markdown
   }
   local html = utils.slurp(templateName)
   for fromStr,toStr in pairs(templateMap) do

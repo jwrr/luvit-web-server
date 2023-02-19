@@ -97,7 +97,7 @@ function srv.getBody(req, res, contentDir)
     elseif urlFields.fileType == 'template' then
       body = template.replace(req, res, urlFields, urlFields.fullPathName)
     elseif urlFields.fileType == 'md' then
-      local markdownTemplateFile = contentDir .. '/templates/markdown.html'
+      local markdownTemplateFile = contentDir .. '/templates/markdown.template'
       body = utils.slurp(urlFields.fullPathName)
       body = srv.convertMarkdown(req, res, urlFields, markdownTemplateFile, body)
     else
