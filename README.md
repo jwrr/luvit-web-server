@@ -1,7 +1,7 @@
 jwrr/luvit-web-server/Dockerfile
 ================================
 
-This Dockerfile makes a web server using Lua and Luvit. 
+This Dockerfile makes a web server using Lua and Luvit.
 Luvit provides asynchronous I/O for Lua, similar to Node.js.
 
 Place your new content into the `content` folder.
@@ -17,24 +17,24 @@ Luvit Links
 TLDR
 ----
 
-`build-server` builds the docker container and `start-server` runs the 
+`build-server` builds the docker container and `start-server` runs the
 container. `use-server` opens firefox to the server home page.
 
 ```bash
 source scripts/server-aliases.sh
-build-server
-start-server
-use-server
-restart-server
+server-build
+server-start
+server-use
+server-restart
 server-status
-stop-server
+server-stop
 ```
 
 Build Docker Image
 ------------------
 
 ```bash
-## Set path to Dockerfile.  Here are two examples. The first is from github, 
+## Set path to Dockerfile.  Here are two examples. The first is from github,
 ## the second is current directory
 
 ## Build Docker Image
