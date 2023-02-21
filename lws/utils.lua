@@ -16,9 +16,9 @@ function utils.fileExists(name)
 end
 
 
-local table2json_filter_table = {socket = 1, handlers = 2,}
+local tostring_skiptable = {socket = 1, handlers = 2,}
 
-function utils.table2json(t, indent)
+function utils.tostring(t, indent)
   indent = indent or 0
   indent = indent + 1
   local indentStr = (indent > 0) and string.rep('\t', indent) or ''
@@ -27,11 +27,11 @@ function utils.table2json(t, indent)
     return json .. indentStr .. 'STACK OVERFLOW\n' .. indentStr .. '}\n'
   end
   for k,v in pairs(t) do
-    local skip = table2json_filter_table[k]
+    local skip = tostring_skiptable[k]
     if not skip then
       json = json .. indentStr .. k .. ': ' 
       if type(v) == 'table' then
-        json = json .. utils.table2json(v, indent)
+        json = json .. utils.tostring(v, indent)
       elseif type(v) == 'function' then
         json = json .. '\t\t' .. '"function",\n'
       else
@@ -40,7 +40,8 @@ function utils.table2json(t, indent)
       end
     end
   end
-  
+
+  json = json:gsub(',\n$', '\n')  
   indent = indent - 1
   local indentStr = (indent > 0) and string.rep('\t', indent) or ''
   json = json .. indentStr .. '}\n'

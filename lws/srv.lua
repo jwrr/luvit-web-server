@@ -99,10 +99,10 @@ function srv.getBody(req, res, contentDir)
     if urlFields.fileType == 'lua' then
       body = dofile(urlFields.fullPathName)
       -- local json_str = cjson.encode(req)
-      local req_str = utils.table2json(req)
-      local res_str = utils.table2json(req)
+      local req_str = utils.tostring(req)
+      local res_str = utils.tostring(req)
       local url_t = url.parse('https://' .. req.headers[1][2] .. req.url)
-      local url_str = utils.table2json(url_t)
+      local url_str = utils.tostring(url_t)
       body = body .. "\n" .. url_str .. '\n\n\n' .. res_str .. '\n\n\n' .. req_str
     elseif urlFields.fileType == 'template' then
       body = template.replace(req, res, urlFields, urlFields.fullPathName)
