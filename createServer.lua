@@ -3,7 +3,7 @@
 -- createServer.lua
 
 package.path  = "/var/local/luarocks-3.8.0/lua_modules/share/lua/5.1/?.lua;" .. package.path
-package.path  = package.path..';/var/www/html/lua/?.lua'
+package.path  = package.path..';/var/www/html/?.lua;/luvit/deps/?.lua'
 package.cpath = "/var/local/luarocks-3.8.0/lua_modules/lib/lua/5.1/?.so;" .. package.cpath
 package.cpath = "/usr/lib/x86_64-linux-gnu/lua/5.1/?.so;" .. package.cpath
 
@@ -11,8 +11,8 @@ local lfs = require 'lfs'
 local http = require'http'
 local https = require'https'
 local url = require'url'
-local srv = require'srv'
-local db = require'db'
+local srv = require'lws.srv'
+local db = require'lws.db'
 
 http.createServer(function (req, res)
   local currDir = lfs.currentdir()
@@ -23,24 +23,4 @@ http.createServer(function (req, res)
 end):listen(1337, '0.0.0.0')
 
 print('Server running at http://0.0.0.0:1337/')
-
-
-
-http.createServer(function (req, res)
-  local body = ''
-  if urlData.fileFound then
-    body = slurp(urlData.fullPathName)
-  else
-    err404(res)
-    body = "Not found"
-  end
-
-  if urlData.contentType ~= 'unknown' then
-    res:setHeader('Content-Type', urlData.contentType)
-  end
-  res:setHeader('Content-Length', #body)
-  res:finish(body)
-
-end):listen(1337, '0.0.0.0')
-
 

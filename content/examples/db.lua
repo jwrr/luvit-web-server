@@ -1,4 +1,4 @@
-local db = require'db'
+local db = require'lws.db'
 local dbStr = db.get('asdf')
 
 local html = "<table><tr><td>" .. dbStr

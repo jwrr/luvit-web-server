@@ -24,11 +24,21 @@ RUN apt install -y git
 ## RUN make all doc info
 ## RUN make install install-doc install-html install-info
 ## WORKDIR /
+
 ## ==============================================================
+## INSTALL LUVIT
+#RUN curl -L https://github.com/luvit/lit/raw/master/get-lit.sh | sh
+#RUN mv /lit /luvi /luvit /usr/local/bin
 
-RUN curl -L https://github.com/luvit/lit/raw/master/get-lit.sh | sh
-RUN mv /lit /luvi /luvit /usr/local/bin
+RUN git clone https://github.com/luvit/luvit.git --branch 2.18.1
+WORKDIR luvit
+RUN make
+RUN mv lit luvi luvit /usr/local/bin
+WORKDIR /
 
+
+
+## ==============================================================
 # INSTALL LUA 5.1 & LUAROCKS
 ## WORKDIR /var/local
 ## RUN wget http://www.lua.org/ftp/lua-5.1.5.tar.gz
@@ -45,6 +55,7 @@ RUN mv /lit /luvi /luvit /usr/local/bin
 ## RUN make
 ## RUN make install
 
+## ==============================================================
 # INSTALL ROCKS
 RUN luarocks install luafilesystem
 RUN luarocks install lpeg
@@ -53,6 +64,9 @@ RUN luarocks install lua-yaml
 RUN luarocks install lcmark
 # RUN luarocks install luasql-sqlite3
 RUN apt-get -y install lua-sql-sqlite3
+# RUN luarocks install lua-cjson
+RUN luarocks install lunajson
 
+## ==============================================================
 CMD ["/var/www/html/createServer.lua"]
 

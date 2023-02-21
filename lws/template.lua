@@ -1,6 +1,6 @@
--- template.lua
+-- lws.template.lua
 
-local utils = require'utils'
+local utils = require'lws.utils'
 local template = {}
 
 function template.replace(req, res, urlFields, templateName)

@@ -1,4 +1,4 @@
--- db.lua
+-- lws.db.lua
 
 local db = {}
 

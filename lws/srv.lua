@@ -1,9 +1,13 @@
--- srv.lua
+-- lws.srv.lua
+
+local url = require'url'
 
 local lcmark = require'lcmark'
-local utils = require'utils'
-local err = require'err'
-local template = require'template'
+-- local cjson = require'cjson'
+--local lunajson = require 'lunajson'
+local utils = require'lws.utils'
+local err = require'lws.err'
+local template = require'lws.template'
 local srv = {}
 
 -------------------------------------------------------------------------
@@ -94,6 +98,12 @@ function srv.getBody(req, res, contentDir)
   if urlFields.fileFound then
     if urlFields.fileType == 'lua' then
       body = dofile(urlFields.fullPathName)
+      -- local json_str = cjson.encode(req)
+      local req_str = utils.table2json(req)
+      local res_str = utils.table2json(req)
+      local url_t = url.parse('https://' .. req.headers[1][2] .. req.url)
+      local url_str = utils.table2json(url_t)
+      body = body .. "\n" .. url_str .. '\n\n\n' .. res_str .. '\n\n\n' .. req_str
     elseif urlFields.fileType == 'template' then
       body = template.replace(req, res, urlFields, urlFields.fullPathName)
     elseif urlFields.fileType == 'md' then

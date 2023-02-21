@@ -1,7 +1,7 @@
--- err.lua
+-- lws.err.lua
 
-local utils = require'utils'
-local template = require'template'
+local utils = require'lws.utils'
+local template = require'lws.template'
 
 local err = {}
 
