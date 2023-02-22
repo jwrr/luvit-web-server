@@ -5,6 +5,7 @@ local url = require'url'
 local lcmark = require'lcmark'
 -- local cjson = require'cjson'
 --local lunajson = require 'lunajson'
+local page = require'lws.page'
 local utils = require'lws.utils'
 local err = require'lws.err'
 local template = require'lws.template'
@@ -91,30 +92,53 @@ function srv.convertMarkdown(req, res, urlFields, markdownTemplateFile, body)
   return html
 end
 
+function srv.getHeaders(req)
+  local t = {}
+  for i,h in ipairs(req.headers) do
+    k = h[1]
+    v = h[2]
+    t[k] = v 
+  end
+  return t
+end
 
-function srv.getBody(req, res, contentDir)
-  local urlFields = srv.getUrlFields(contentDir, req.url)
+function srv.getQuery(query)
+  query = query or page.url_t.query or ''
+  local q_t = {}
+  for q in string.gmatch(query, "[^&]+") do
+    local k = q:gsub('=.*', '')
+    local v = q:gsub('[^=]*=', '')
+    q_t[k] = v
+  end
+  return q_t
+end
+
+
+function srv.getBody(req, res)
+  local urlFields = srv.getUrlFields(page.sitePath, req.url)
   local body = ''
   if urlFields.fileFound then
     if urlFields.fileType == 'lua' then
       body = dofile(urlFields.fullPathName)
-      -- local json_str = cjson.encode(req)
-      local req_str = utils.tostring(req)
-      local res_str = utils.tostring(req)
-      local url_t = url.parse('https://' .. req.headers[1][2] .. req.url)
-      local url_str = utils.tostring(url_t)
-      body = body .. "\n" .. url_str .. '\n\n\n' .. res_str .. '\n\n\n' .. req_str
+      page.headers_t = srv.getHeaders(req)
+      page.url_t = url.parse(page.protocol .. '://' .. page.headers_t['Host'] .. req.url)
+      page.get_t = srv.getQuery()
+      page.add("method", req.method)
+      local page_str = utils.tostring(page, 0, "page = ")
+      local req_str = utils.tostring(req, 0, "req = ")
+      local res_str = utils.tostring(res, 0, "res = ")
+      body = body .. "\n" .. page_str .. '\n\n\n' .. res_str .. '\n\n\n' .. req_str
     elseif urlFields.fileType == 'template' then
       body = template.replace(req, res, urlFields, urlFields.fullPathName)
     elseif urlFields.fileType == 'md' then
-      local markdownTemplateFile = contentDir .. '/templates/markdown.template'
+      local markdownTemplateFile = page.sitePath .. '/templates/markdown.template'
       body = utils.slurp(urlFields.fullPathName)
       body = srv.convertMarkdown(req, res, urlFields, markdownTemplateFile, body)
     else
       body = utils.slurp(urlFields.fullPathName)
     end
   else
-    body = err.handler(req, res, urlFields, 404, contentDir)
+    body = err.handler(req, res, urlFields, 404, page.sitePath)
   end
 
   if urlFields.contentType ~= 'unknown' then
