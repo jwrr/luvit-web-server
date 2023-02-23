@@ -3,7 +3,7 @@
 local url = require'url'
 
 local lcmark = require'lcmark'
-local brotli = require'brotli'
+local brotli = require'lws.brotli'
 local page = require'lws.page'
 local utils = require'lws.utils'
 local err = require'lws.err'
@@ -87,20 +87,12 @@ function srv.getQuery(query)
 end
 
 
-function brotli.accepted(headerString) 
-  if (page and page.headers_t and page.headers_t['Accept-Encoding']) then
-    return page.headers_t['Accept-Encoding']:find('br') and true or false;
-  end
-  return false
-end
-
-
 function srv.getBody(req, res)
-  local urlFields = srv.getUrlFields(page.sitePath, req.url)
+  page.urlFields = srv.getUrlFields(page.sitePath, req.url)
   local body = ''
-  if urlFields.fileFound then
-    if urlFields.fileType == 'lua' then
-      body = dofile(urlFields.fullPathName)
+  if page.urlFields.fileFound then
+    if page.urlFields.fileType == 'lua' then
+      body = dofile(page.urlFields.fullPathName)
       page.headers_t = srv.getHeaders(req)
       page.url_t = url.parse(page.protocol .. '://' .. page.headers_t['Host'] .. req.url)
       page.get_t = srv.getQuery()
@@ -108,30 +100,23 @@ function srv.getBody(req, res)
       local page_str = utils.tostring(page, 0, "page = ")
       local req_str = utils.tostring(req, 0, "req = ")
       local res_str = utils.tostring(res, 0, "res = ")
-      local diag_str = page_str .. '\n\n\n' .. res_str .. '\n\n\n' .. req_str
+      local diag_str = page_str .. '\n\n\n' .. res_str .. '\n\n\n' .. req_str .. brotli.cache.tostring()
       body = body .. "\n" .. diag_str
-    elseif urlFields.fileType == 'template' then
-      body = template.replace(req, res, urlFields, urlFields.fullPathName)
-    elseif urlFields.fileType == 'md' then
+    elseif page.urlFields.fileType == 'template' then
+      body = template.replace(req, res, page.urlFields, page.urlFields.fullPathName)
+    elseif page.urlFields.fileType == 'md' then
       local markdownTemplateFile = page.sitePath .. '/templates/markdown.template'
-      body = utils.slurp(urlFields.fullPathName)
-      body = srv.convertMarkdown(req, res, urlFields, markdownTemplateFile, body)
+      body = utils.slurp(page.urlFields.fullPathName)
+      body = srv.convertMarkdown(req, res, page.urlFields, markdownTemplateFile, body)
     else
-      body = utils.slurp(urlFields.fullPathName)
+      body = utils.slurp(page.urlFields.fullPathName)
     end
   else
-    body = err.handler(req, res, urlFields, 404, page.sitePath)
+    body = err.handler(req, res, page.urlFields, 404, page.sitePath)
   end
 
-
-  if brotli.accepted() then
-    body = brotli.compress(body)
-    res:setHeader('Content-Encoding', 'br')
-  end
-
-  if urlFields.mime ~= 'unknown' then
-    res:setHeader('Content-Type', urlFields.mime)
-  end
+  body = brotli.compressIfAccepted(res, body)
+  mime.setHeader(res)
   res:setHeader('Content-Length', #body)
 
   return body

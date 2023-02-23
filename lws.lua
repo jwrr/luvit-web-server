@@ -1,6 +1,6 @@
 #!/usr/local/bin/luvit
 
--- createServer.lua
+-- lws.lua
 
 package.path  = "/var/local/luarocks-3.8.0/lua_modules/share/lua/5.1/?.lua;" .. package.path
 package.path  = package.path..';/var/www/html/?.lua;/luvit/deps/?.lua'
@@ -14,6 +14,7 @@ local url = require'url'
 local page = require'lws.page'
 local srv = require'lws.srv'
 local db = require'lws.db'
+local brotli = require'lws.brotli'
 
 
 local function onRequest(req, res)
@@ -35,7 +36,6 @@ end
 
 
 local items = {};
-
 
 function show(res)
   local html = '<html><head><title>Todo List</title></head><body>\n'
