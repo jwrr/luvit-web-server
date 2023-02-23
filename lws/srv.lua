@@ -3,8 +3,7 @@
 local url = require'url'
 
 local lcmark = require'lcmark'
--- local cjson = require'cjson'
---local lunajson = require 'lunajson'
+local brotli = require'brotli'
 local page = require'lws.page'
 local utils = require'lws.utils'
 local err = require'lws.err'
@@ -67,7 +66,7 @@ function srv.getUrlFields(rootDir, reqUrl)
     fullPathName = fullPathNameLua
     baseName = baseName:gsub('.html$', '.lua')
   end
-  
+
   local fullPathNameTemplate = fullPathName:gsub('.html$', '.template')
   local isTemplate = not fileFound and utils.fileExists(fullPathNameTemplate)
   if isTemplate then
@@ -97,7 +96,7 @@ function srv.getHeaders(req)
   for i,h in ipairs(req.headers) do
     k = h[1]
     v = h[2]
-    t[k] = v 
+    t[k] = v
   end
   return t
 end
@@ -127,7 +126,8 @@ function srv.getBody(req, res)
       local page_str = utils.tostring(page, 0, "page = ")
       local req_str = utils.tostring(req, 0, "req = ")
       local res_str = utils.tostring(res, 0, "res = ")
-      body = body .. "\n" .. page_str .. '\n\n\n' .. res_str .. '\n\n\n' .. req_str
+      local diag_str = page_str .. '\n\n\n' .. res_str .. '\n\n\n' .. req_str
+      body = body .. "\n" .. diag_str
     elseif urlFields.fileType == 'template' then
       body = template.replace(req, res, urlFields, urlFields.fullPathName)
     elseif urlFields.fileType == 'md' then
@@ -139,6 +139,11 @@ function srv.getBody(req, res)
     end
   else
     body = err.handler(req, res, urlFields, 404, page.sitePath)
+  end
+
+  if page.headers_t['Accept-Encoding']:find('br')  then
+    body = brotli.compress(body)
+    res:setHeader('Content-Encoding', 'br')
   end
 
   if urlFields.contentType ~= 'unknown' then

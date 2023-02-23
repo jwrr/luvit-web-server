@@ -64,9 +64,8 @@ RUN luarocks install lua-yaml
 RUN luarocks install lcmark
 # RUN luarocks install luasql-sqlite3
 RUN apt-get -y install lua-sql-sqlite3
-# RUN luarocks install lua-cjson
-RUN luarocks install lunajson
+RUN luarocks install lua-brotli
 
 ## ==============================================================
-CMD ["/var/www/html/createServer.lua"]
+CMD ["/var/www/html/lws.lua"]
 
