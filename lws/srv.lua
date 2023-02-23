@@ -8,37 +8,11 @@ local page = require'lws.page'
 local utils = require'lws.utils'
 local err = require'lws.err'
 local template = require'lws.template'
+local mime = require'lws.mime'
 local srv = {}
 
--------------------------------------------------------------------------
--- contentTypes
 
-local contentTypes = {
-  css = 'text/css',
-  gif = 'image/gif',
-  html = 'text/html',
-  htm = 'text/html',
-  jpg = 'image/jpeg',
-  js  = 'text/javascript',
-  lua = 'text/html',
-  md  = 'text/html',
-  png = 'image/x-png',
-  svg = 'image/svg+xml',
-  template = 'text/html',
-  ttf = 'font/ttf',
-  txt = 'text/plain'
-}
-
-function srv.getContentType(fileType)
-  return contentTypes[fileType] or 'unknown'
-end
-
--- Add custom http content-type
-function srv.addContentType(fileType, contentType)
-  contentTypes[fileType] = contentType
-end
-
--------------------------------------------------------------------------
+--------------------------------------------------------------------------
 
 
 function srv.getUrlFields(rootDir, reqUrl)
@@ -76,10 +50,10 @@ function srv.getUrlFields(rootDir, reqUrl)
     baseName = baseName:gsub('.html$', '.template')
   end
 
-  local contentType = srv.getContentType(fileType)
+  local mime = mime.get(fileType)
 
   local processedOutput = {fileType = fileType, pathName = pathName, urlFileName = urlFileName, baseName = baseName,
-  fullPathName = fullPathName, fileFound = fileFound, contentType = contentType }
+  fullPathName = fullPathName, fileFound = fileFound, mime = mime }
   return processedOutput
 end
 
@@ -113,6 +87,14 @@ function srv.getQuery(query)
 end
 
 
+function brotli.accepted(headerString) 
+  if (page and page.headers_t and page.headers_t['Accept-Encoding']) then
+    return page.headers_t['Accept-Encoding']:find('br') and true or false;
+  end
+  return false
+end
+
+
 function srv.getBody(req, res)
   local urlFields = srv.getUrlFields(page.sitePath, req.url)
   local body = ''
@@ -141,13 +123,14 @@ function srv.getBody(req, res)
     body = err.handler(req, res, urlFields, 404, page.sitePath)
   end
 
-  if page.headers_t['Accept-Encoding']:find('br')  then
+
+  if brotli.accepted() then
     body = brotli.compress(body)
     res:setHeader('Content-Encoding', 'br')
   end
 
-  if urlFields.contentType ~= 'unknown' then
-    res:setHeader('Content-Type', urlFields.contentType)
+  if urlFields.mime ~= 'unknown' then
+    res:setHeader('Content-Type', urlFields.mime)
   end
   res:setHeader('Content-Length', #body)
 
