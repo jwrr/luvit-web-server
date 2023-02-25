@@ -78,12 +78,37 @@ end
 
 function utils.split(str, sep)
   sep = sep or '%w'
-  local notsep = '[^' .. sep .. ']'
+  local notsep = '[^' .. sep .. ']+'
   local pieces = {}
   for piece in string.gmatch(str, notsep) do
     pieces[#pieces+1] = piece
   end
   return pieces
 end
+
+
+function utils.trim(s)
+  return s:gsub("^%s+", ""):gsub("%s+$", "")
+end
+
+
+function utils.splitKV(cookieString)
+  if cookieString == nil then
+    return {}
+  end
+
+  local c = utils.split(cookieString, ';')
+
+  kv_t = {}
+  for i,s in ipairs(c) do
+    local kv = utils.split(s, '=')
+    local k = utils.trim(kv[1])
+    local v = utils.trim(kv[2])
+    kv_t[k] = v
+  end  
+  
+  return kv_t
+end
+
 
 return utils

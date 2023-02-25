@@ -104,21 +104,9 @@ function page.getHeaders(req)
 end
 
 
-function page.getCookies()
-  page.cookieString = ''
-  if page and page.headers and page.headers['Cookie'] then
-    page.cookieString = page.headers['Cookie']
-  end
 
-  local c = utils.split(page.cookieString, ';')
-  page.cookies = {}
-  for i,kv in ipairs(c) do
-    k = kv[1]
-    v = kv[2]
-    page.cookies[k] = v
-  end  
-  
-  return page.cookies
+function page.getCookies(cookieString)
+  return utils.splitKV(cookieString)
 end
 
 

@@ -20,7 +20,7 @@ function srv.getBody(req, res)
   local body = ''
   if page.urlFields.fileFound then
     page.headers = page.getHeaders(req)
---FIXME    page.getCookies()
+    page.cookies = page.getCookies(page.headers['Cookie'])
     page.urlParts = url.parse(page.protocol .. '://' .. page.headers['Host'] .. req.url)
     page.getParams = page.getQuery()
     page.add("method", req.method)  
