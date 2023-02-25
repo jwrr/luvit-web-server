@@ -9,18 +9,26 @@ local utils = require'lws.utils'
 local err = require'lws.err'
 local template = require'lws.template'
 local mime = require'lws.mime'
-local cookies = require'lws.cookies'
+local cookie = require'lws.cookie'
+local session = require'lws.session'
+
 local srv = {}
 
+srv.session = session
 
 --------------------------------------------------------------------------
 
 function srv.getBody(req, res)
+
+  srv.res = res
+  srv.req = req
+  srv.page = page
+
   page.urlFields = page.getUrlFields(page.sitePath, req.url)
   local body = ''
   if page.urlFields.fileFound then
     page.headers = page.getHeaders(req)
-    page.cookies = page.getCookies(page.headers['Cookie'])
+    page.headerCookies = page.getCookies(page.headers['Cookie'])
     page.urlParts = url.parse(page.protocol .. '://' .. page.headers['Host'] .. req.url)
     page.getParams = page.getQuery()
     page.add("method", req.method)  
@@ -34,7 +42,7 @@ function srv.getBody(req, res)
       local page_str = utils.tostring(page, 0, "page = ")
       local req_str = utils.tostring(req, 0, "req = ")
       local res_str = utils.tostring(res, 0, "res = ")
-      local diag_str = r .. page_str .. '\n\n\n' .. res_str .. '\n\n\n' .. req_str .. brotli.cache.tostring()
+      local diag_str = '' -- .. page_str .. '\n\n\n' .. res_str .. '\n\n\n' .. req_str .. brotli.cache.tostring()
       if page.urlFields.fileType == 'lua' then
         body = dofile(page.urlFields.fullPathName) .. "\n" .. diag_str
       elseif page.urlFields.fileType == 'html' then
@@ -56,19 +64,10 @@ function srv.getBody(req, res)
   mime.setHeader(res)
   res:setHeader('Content-Length', #body)
 
-  local sessionName = 'session'
---  if cookies.isSet(sessionName) then
-    local sid = utils.rand64(64)
-    cookies.set(sessionName, sid)
-    res:setHeader('Set-Cookie', sessionName .. '=' .. sid .. '; secure;')
-    res:setHeader('Set-Cookie', 'a=1')
-    res:setHeader('Set-Cookie', 'b=2')
-    res:setHeader('Set-Cookie', 'c=3')
---    res:setHeader('Set-Cookie', sessionName .. '=' .. sid .. '; secure; a=1; b=2; c=3')
---  end
-  if page.isImage() then
-     res:setHeader('Cache-Control', 'max-age=30')
-  end
+--   if page.isImage() then
+--      res:setHeader('Cache-Control', 'max-age=30')
+--   end
+
   return body
 end
 

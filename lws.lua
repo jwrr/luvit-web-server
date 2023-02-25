@@ -15,6 +15,7 @@ local page = require'lws.page'
 local srv = require'lws.srv'
 local db = require'lws.db'
 local brotli = require'lws.brotli'
+local utils = require'lws.utils'
 
 
 local function onRequest(req, res)
@@ -58,6 +59,21 @@ local qs = require('querystring');
 function add(req, res)
   local body = '';
   --req.setEncoding('utf8');
+  req:on('data', function(chunk) body =body.. chunk; print("DATA111") end);
+  req:on('end', function()
+    print("END111")
+    local obj = qs.parse(body);
+    --p(obj)
+    table.insert(items,obj.item);
+    parse.
+    
+    show(res);
+  end);
+end
+
+function addsave(req, res)
+  local body = '';
+  --req.setEncoding('utf8');
   req:on('data', function(chunk) body =body.. chunk; end);
   req:on('end', function()
     local obj = qs.parse(body);
@@ -68,17 +84,27 @@ function add(req, res)
 end
 
 
-function handlePOST(req, res, page)
+local items2 = 'asdf'
+
+function handlePOST(req, res)
   local postQuery = '';
   --req.setEncoding('utf8');
-  req:on('data', function(chunk) postQuery = postQuery .. chunk end);
+  req:on('data', function(chunk) postQuery = postQuery .. chunk; end);
   req:on('end', function()
-    page.post = postQuery
-    page.postParams = page.getQuery(postQuery)
-    page.reqParams = page.postParams
+    local obj = qs.parse(postquery);
+    --p(obj)
+    table.insert(items,obj.item);
+    
+    page.postQuery = utils.decodeURL(postQuery)
+    page.postParams = utils.splitKV(page.postQuery, '&', '=')
+    page.requestParams = page.postParams
+    local json = utils.tostring(page.postParams)
+    body = srv.getBody(req, res)
+    res:setHeader('Content-Type', 'text/html');
+    res:setHeader('Content-Length', #body);
+    res:finish(body);
   end);
 end
-
 
 
 http.createServer(function (req, res)
@@ -89,16 +115,17 @@ http.createServer(function (req, res)
     if req.method=='GET' then
       show(res);
     elseif req.method=='POST' then
-      add(req, res);
+      handlePOST(req, res);
     else
       badRequest(res);
     end
   else
     if req.method=='POST' then
-      handlePOST(req, res, page)
+      handlePOST(req, res)
+    else
+      body = srv.getBody(req, res)
+      res:finish(body)
     end
-    body = srv.getBody(req, res)
-    res:finish(body)
   end
 end):listen(1337, '0.0.0.0')
 

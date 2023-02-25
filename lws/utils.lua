@@ -37,7 +37,7 @@ function utils.tostring(t, indent, title)
       json = json .. indentStr .. '"' .. k .. '"' .. ': '
       local tabSize = 4
       local spaceSize = 3 - math.floor(#kStr/tabSize)
-      local spaces = string.rep('\t', spaceSize) 
+      local spaces = string.rep('\t', spaceSize)
       if type(v) == 'table' then
         json = json .. utils.tostring(v, indent)
       elseif type(v) == 'function' then
@@ -49,7 +49,7 @@ function utils.tostring(t, indent, title)
     end
   end
 
-  json = json:gsub(',\n$', '\n')  
+  json = json:gsub(',\n$', '\n')
   indent = indent - 1
   local comma = (indent>0) and ',' or ''
   local indentStr = (indent > 0) and string.rep('\t', indent) or ''
@@ -92,23 +92,53 @@ function utils.trim(s)
 end
 
 
-function utils.splitKV(cookieString)
-  if cookieString == nil then
+function utils.splitKV(kvstr, sepOuter, sepInner)
+  if kvstr == nil then
     return {}
   end
 
-  local c = utils.split(cookieString, ';')
+  sepOuter = sepOuter or ';'
+  sepInner = sepInner or '='
+
+  local c = utils.split(kvstr, sepOuter)
 
   kv_t = {}
   for i,s in ipairs(c) do
-    local kv = utils.split(s, '=')
+    local kv = utils.split(s, sepInner)
     local k = utils.trim(kv[1])
     local v = utils.trim(kv[2])
-    kv_t[k] = v
-  end  
-  
+    if not kv_t[k] then -- if multiple then take only the first
+      kv_t[k] = v
+    end
+  end
+
   return kv_t
 end
 
+
+function utils.getDateUTC(timestamp)
+  timestamp = timestamp or os.time()
+  return os.date('!%Y-%m-%d-%H:%M:%S GMT', timestamp)
+end
+
+
+function utils.now()
+  return os.time()
+end
+
+
+function utils.nowUTC()
+  return utils.getDateUTC(utils.now())
+end
+
+
+function utils.decodeURLChar(hex)
+  return string.char(tonumber(hex,16))
+end
+
+function utils.decodeURL(url)
+  local s, t = string.gsub(url, "%%(%x%x)", utils.decodeURLChar)
+  return s
+end
 
 return utils

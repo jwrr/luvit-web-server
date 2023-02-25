@@ -1,4 +1,6 @@
-html = [[
+local srv = require'lws.srv'
+
+local html = [[
 <!doctype html>
 <html lang="en">
   <head>
@@ -41,5 +43,7 @@ html = [[
   </body>
 </html>
 ]]
+
+srv.session.start(srv.res, srv.page.postParams.email)
 
 return html

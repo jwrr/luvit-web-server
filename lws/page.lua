@@ -6,9 +6,7 @@ local err = require'lws.err'
 local template = require'lws.template'
 local mime = require'lws.mime'
 
-
 page = {}
-
 
 function page.add(k, v)
   page[k] = v
