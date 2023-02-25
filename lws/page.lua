@@ -29,7 +29,7 @@ end
 
 
 function page.getQuery(query)
-  query = query or page.url_t.query or ''
+  query = query or page.urlParts.query or ''
   local q_t = {}
   for q in string.gmatch(query, "[^&]+") do
     local k = q:gsub('=.*', '')
@@ -104,13 +104,28 @@ function page.getHeaders(req)
 end
 
 
+function page.getCookies()
+  page.cookieString = ''
+  if page and page.headers and page.headers['Cookie'] then
+    page.cookieString = page.headers['Cookie']
+  end
 
+  local c = utils.split(page.cookieString, ';')
+  page.cookies = {}
+  for i,kv in ipairs(c) do
+    k = kv[1]
+    v = kv[2]
+    page.cookies[k] = v
+  end  
+  
+  return page.cookies
+end
 
 
 -- function page.init(req)
 --
 --       page.headers = page.getHeaders(req)
---       page.url_t = url.parse(page.protocol .. '://' .. page.headers['Host'] .. req.url)
+--       page.urlParts = url.parse(page.protocol .. '://' .. page.headers['Host'] .. req.url)
 --       page.query_t = page.getQuery()
 --       page.add("method", req.method)
 --

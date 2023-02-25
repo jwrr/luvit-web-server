@@ -39,8 +39,8 @@ function brotli.cache.get(res, url)
 end
 
 function brotli.accepted(headerString) 
-  if (page and page.headers_t and page.headers_t['Accept-Encoding']) then
-    return page.headers_t['Accept-Encoding']:find('br') and true or false;
+  if (page and page.headers and page.headers['Accept-Encoding']) then
+    return page.headers['Accept-Encoding']:find('br') and true or false;
   end
   return false
 end

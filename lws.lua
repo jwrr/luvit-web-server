@@ -74,8 +74,8 @@ function handlePOST(req, res, page)
   req:on('data', function(chunk) postQuery = postQuery .. chunk end);
   req:on('end', function()
     page.post = postQuery
-    page.post_t = page.getQuery(postQuery)
-    page.request_t = page.post_t
+    page.postParams = page.getQuery(postQuery)
+    page.reqParams = page.postParams
   end);
 end
 

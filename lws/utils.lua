@@ -61,4 +61,29 @@ function utils.tostring(t, indent, title)
   return title .. json
 end
 
+
+math.randomseed(os.time())
+
+function utils.rand64(len)
+  local base64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  s = ""
+  for i=1,len do
+    r = math.random(64);
+    ch64 = base64:sub(r, r)
+    s = s .. ch64
+  end
+  return s
+end
+
+
+function utils.split(str, sep)
+  sep = sep or '%w'
+  local notsep = '[^' .. sep .. ']'
+  local pieces = {}
+  for piece in string.gmatch(str, notsep) do
+    pieces[#pieces+1] = piece
+  end
+  return pieces
+end
+
 return utils
