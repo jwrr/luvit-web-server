@@ -14,86 +14,13 @@ local srv = {}
 
 --------------------------------------------------------------------------
 
-
-function srv.getUrlFields(rootDir, reqUrl)
-  local urlFileName = reqUrl:gsub('%?.*', '')
-  if urlFileName:sub(-1) == '/' then
-    urlFileName = urlFileName .. 'index.html'
-  end
-  local baseName = urlFileName:gsub('.*%/', '')
-  if not baseName:find('.') then
-    baseName = 'index.html'
-    urlFileName = urlfileName .. '/' .. baseName
-  end
-  local charToDelete = -(#baseName + 2)
-  local pathName = urlFileName:sub(2, charToDelete)
-  local fileType = baseName:gsub('.*%.', '')
-
-  local fullPathName = rootDir .. urlFileName;
-  local fileFound = utils.fileExists(fullPathName)
-
-  local fullPathNameLua = fullPathName:gsub('.html$', '.lua')
-  local isLua = not fileFound and utils.fileExists(fullPathNameLua)
-  if isLua then
-    fileFound = true
-    fileType = 'lua'
-    fullPathName = fullPathNameLua
-    baseName = baseName:gsub('.html$', '.lua')
-  end
-
-  local fullPathNameTemplate = fullPathName:gsub('.html$', '.template')
-  local isTemplate = not fileFound and utils.fileExists(fullPathNameTemplate)
-  if isTemplate then
-    fileFound = true
-    fileType = 'template'
-    fullPathName = fullPathNameTemplate
-    baseName = baseName:gsub('.html$', '.template')
-  end
-
-  local mime = mime.get(fileType)
-
-  local processedOutput = {fileType = fileType, pathName = pathName, urlFileName = urlFileName, baseName = baseName,
-  fullPathName = fullPathName, fileFound = fileFound, mime = mime }
-  return processedOutput
-end
-
-
-function srv.convertMarkdown(req, res, urlFields, markdownTemplateFile, body)
-  local middle, metadata = lcmark.convert(body, "html", {smart = true})
-  urlFields.markdown = middle
-  local html = template.replace(req, res, urlFields, markdownTemplateFile)
-  return html
-end
-
-function srv.getHeaders(req)
-  local t = {}
-  for i,h in ipairs(req.headers) do
-    k = h[1]
-    v = h[2]
-    t[k] = v
-  end
-  return t
-end
-
-function srv.getQuery(query)
-  query = query or page.url_t.query or ''
-  local q_t = {}
-  for q in string.gmatch(query, "[^&]+") do
-    local k = q:gsub('=.*', '')
-    local v = q:gsub('[^=]*=', '')
-    q_t[k] = v
-  end
-  return q_t
-end
-
-
 function srv.getBody(req, res)
-  page.urlFields = srv.getUrlFields(page.sitePath, req.url)
+  page.urlFields = page.getUrlFields(page.sitePath, req.url)
   local body = ''
   if page.urlFields.fileFound then
-    page.headers_t = srv.getHeaders(req)
+    page.headers_t = page.getHeaders(req)
     page.url_t = url.parse(page.protocol .. '://' .. page.headers_t['Host'] .. req.url)
-    page.get_t = srv.getQuery()
+    page.get_t = page.getQuery()
     page.add("method", req.method)  
     if brotli.cache.hit() then
        body = brotli.cache.get(res)
@@ -117,7 +44,7 @@ function srv.getBody(req, res)
       elseif page.urlFields.fileType == 'md' then
         local markdownTemplateFile = page.sitePath .. '/templates/markdown.template'
         body = utils.slurp(page.urlFields.fullPathName)
-        body = srv.convertMarkdown(req, res, page.urlFields, markdownTemplateFile, body)
+        body = page.convertMarkdown(req, res, page.urlFields, markdownTemplateFile, body)
       else
         body = utils.slurp(page.urlFields.fullPathName)
       end
@@ -128,10 +55,11 @@ function srv.getBody(req, res)
   end
   mime.setHeader(res)
   res:setHeader('Content-Length', #body)
-
+  if page.isImage() then
+     res:setHeader('Cache-Control', 'max-age=30')
+  end
   return body
 end
-
 
 return srv
 

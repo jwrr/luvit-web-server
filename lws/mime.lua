@@ -1,8 +1,6 @@
 -------------------------------------------------------------------------
 -- mimeTypes
 
-local page = require'lws.page'
-
 local mime = {}
 
 mime.types = {
@@ -32,9 +30,7 @@ function mime.insert(extension, mime)
 end
 
 function mime.setHeader(res)  
-  if page.urlFields.mime ~= 'unknown' then
     res:setHeader('Content-Type', page.urlFields.mime)
-  end
 end
 
 return mime
