@@ -25,9 +25,9 @@ function cookie.create(res, key, name, maxAge, attr)
     cookie.t[name] = {}
   end
   
-  cookie.t[name][key] = expireTime
+  cookie.t[name][key] = {expireTime = expireTime}
   
-  print("created cookie:" .. name .. ' ' .. key .. ' ' .. cookie.t[name][key])
+  print("created cookie:" .. name .. ' ' .. key .. ' ' .. cookie.t[name][key].expireTime)
   
   if res then
     local nameVal = name .. '=' .. key .. ';'
@@ -48,12 +48,33 @@ function cookie.exists(key, name)
   return false
 end
 
+function cookie.fieldExists(fieldName, key, name)
+  name = name or cookie.defaultName or 'sid'
+  key = key or page.headerCookies[name]
+  if cookie.exists(key, name) then
+    return cookie.t[name][key][fieldName] and true or false
+  end
+  return false
+end
+
+
+function cookie.getField(fieldName, key, name)
+  name = name or cookie.defaultName or 'sid'
+  key = key or page.headerCookies[name]
+  print("++++++++++++++++IN cookie.fieldExists. "..name.." "..key..' '..fieldName)
+  if cookie.fieldExists(fieldName) then
+    return cookie.t[name][key][fieldName]
+  end
+  return nil
+end
+
+
 
 function cookie.getExpire(key, name)
   name = name or cookie.defaultName or 'sid'
   key = key or page.headerCookies[name]
   if cookie.exists(key, name) then
-    return cookie[name][key]
+    return cookie.t[name][key].expireTime
   end
   return nil
 end
@@ -62,7 +83,7 @@ end
 function cookie.getExpireUTC(key, name)
   name = name or cookie.defaultName or 'sid'
   key = key or page.headerCookies[name]
-  local expireTime = cookie.getExpire(name)
+  local expireTime = cookie.getExpire(key, name)
   if expireTime then
     return utils.getDateUTC(expireTime)
   end
@@ -74,7 +95,7 @@ function cookie.remove(key, name)
   name = name or cookie.defaultName or 'sid'
   key = key or page.headerCookies[name]
   if cookie.exists(key, name) then
-    cookie[name][key] = nil
+    cookie.t[name][key] = nil
   end
 end
 
@@ -114,6 +135,16 @@ function cookie.getCurrent(name)
   end
   return nil
 end
+
+
+function cookie.appendFields(newFields, key, name)
+  name = name or cookie.defaultName or 'sid'
+  key = key or page.headerCookies[name]
+  for k,v in pairs(newFields) do
+    cookie.t[name][key][k] = v
+  end
+end
+
 
 return cookie
 

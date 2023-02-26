@@ -59,9 +59,8 @@ local qs = require('querystring');
 function add(req, res)
   local body = '';
   --req.setEncoding('utf8');
-  req:on('data', function(chunk) body =body.. chunk; print("DATA111") end);
+  req:on('data', function(chunk) body =body.. chunk; end);
   req:on('end', function()
-    print("END111")
     local obj = qs.parse(body);
     --p(obj)
     table.insert(items,obj.item);
@@ -71,20 +70,6 @@ function add(req, res)
   end);
 end
 
-function addsave(req, res)
-  local body = '';
-  --req.setEncoding('utf8');
-  req:on('data', function(chunk) body =body.. chunk; end);
-  req:on('end', function()
-    local obj = qs.parse(body);
-    --p(obj)
-    table.insert(items,obj.item);
-    show(res);
-  end);
-end
-
-
-local items2 = 'asdf'
 
 function handlePOST(req, res)
   local postQuery = '';
@@ -128,7 +113,6 @@ http.createServer(function (req, res)
     end
   end
 end):listen(1337, '0.0.0.0')
-
 
 -- http.createServer(onRequest):listen(8080)
 -- print("Server listening at http://localhost:8080/")

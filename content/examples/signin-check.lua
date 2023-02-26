@@ -1,5 +1,7 @@
 local srv = require'lws.srv'
 
+srv.session.start(srv)
+
 local html = [[
 <!doctype html>
 <html lang="en">
@@ -21,7 +23,7 @@ local html = [[
 
   <body class="text-center">
   
-  <h1>Signin Password Checkerxxxx</h1>
+  <h1>Signin Password Checker</h1>
   
   <!--
     <form class="form-signin" action="/examples/signin.html" method="get">
@@ -44,6 +46,5 @@ local html = [[
 </html>
 ]]
 
-srv.session.start(srv.res, srv.page.postParams.email)
 
 return html
