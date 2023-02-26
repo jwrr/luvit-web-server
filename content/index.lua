@@ -21,7 +21,9 @@ point for a Luvit-based web server, take a look at Weblit. Best of luck, JWRR.
 <h2>Here are a few things that are supported</h2>
 
 <h3>CSS & JavaScript</h3>
-The Bootstrap CSS and Javacript files are being server locally with this server.
+Typically Bootstrap CSS and JS files are served from a fast CDN to reduced load on a
+website server. But for this example the Bootstrap CSS and Javacript files are
+being server locally to demonstrate that CSS and JS files are supported.
 
 <h3>Markdown</h2>
 Markdown is supported using <a href="https://luarocks.org/modules/jgm/lcmark">lcmark</a>.
@@ -33,6 +35,8 @@ extension are converted to html.
 using <a href="https://luarocks.org/modules/witchu/lua-brotli">lua-brotli</a>. 
 Brotli is a compression algorithm developed by Google to help  websites load 
 faster. It is supported by major browsers and is considered the successor to gzip.
+Brotli is useful for compressing static text files but not so much for images that
+are already compressed.
 
 <h3>SQLite Database</h3>
 <a href="https://www.sqlite.org/index.html">SQLite3</a> is supported using <a href="https://luarocks.org/modules/tomasguisasola/luasql-sqlite3">
@@ -110,8 +114,8 @@ navbar.html = [[
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active"><a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a></li>
-          <li class="nav-item active"><a class="nav-link" href="/login-form.html">Login</a></li>
-          <li class="nav-item active"><a class="nav-link" href="/join.html">Join</a></li>
+          <li class="nav-item active"><a class="nav-link" href="#">Signin</a></li>
+          <li class="nav-item active"><a class="nav-link" href="#">Join</a></li>
           <li class="nav-item"><a class="nav-link disabled" href="#">Comment</a></li>
           <li class="nav-item"><a class="nav-link disabled" href="#">Like</a></li>
           <li class="nav-item dropdown">
