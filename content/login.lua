@@ -12,7 +12,7 @@ local html = [[
     <meta name="author" content="">
     <link rel="icon" href="/docs/4.0/assets/img/favicons/favicon.ico">
 
-    <title>Signin Template for Bootstrap</title>
+    <title>LWServer Login Checker Page</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/styles/bootstrap/bootstrap.min.css" rel="stylesheet">
@@ -23,7 +23,7 @@ local html = [[
 
   <body class="text-center">
   
-  <h1>Signin Password Checker</h1>
+  <h1>Login Checker</h1>
   
   <!--
     <form class="form-signin" action="/examples/signin.html" method="get">

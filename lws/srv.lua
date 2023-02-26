@@ -32,7 +32,8 @@ function srv.getBody(req, res)
     page.urlParts = url.parse(page.protocol .. '://' .. page.headers['Host'] .. req.url)
     page.getParams = page.getQuery()
     page.add("method", req.method)
-    if brotli.cache.hit() then
+    brotli.cache.enabled = false
+    if brotli.cache.enabled and brotli.cache.hit() then
        body = brotli.cache.get(res)
     else
       local r = ''
@@ -57,9 +58,9 @@ function srv.getBody(req, res)
       else
         body = utils.slurp(page.urlFields.fullPathName)
       end
-      if page.urlFields.fileType ~= 'lua' then
-        body = brotli.compressIfAccepted(res, body)
-      end
+--       if page.urlFields.fileType ~= 'lua' then
+--         body = brotli.compressIfAccepted(res, body)
+--       end
     end
   else
     body = err.handler(req, res, page.urlFields, 404, page.sitePath)
