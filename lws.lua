@@ -47,7 +47,7 @@ function show(res)
   end),'\n')
   .. '</ul>\n'
   .. '<form method="post" action="/todo">\n'
-  .. '<p><input type="text" name="item" /></p>\n'
+  .. '<p><input type="email" name="email" /></p>\n'
   .. '<p><input type="submit" value="Add Item" /></p>\n'
   .. '</form></body></html>\n';
   res:setHeader('Content-Type', 'text/html');
@@ -76,7 +76,7 @@ function handlePOST(req, res)
   --req.setEncoding('utf8');
   req:on('data', function(chunk) postQuery = postQuery .. chunk; end);
   req:on('end', function()
-    local obj = qs.parse(postquery);
+    local obj = qs.parse(postQuery);
     --p(obj)
     table.insert(items,obj.item);
     
@@ -102,6 +102,7 @@ http.createServer(function (req, res)
     elseif req.method=='POST' then
       handlePOST(req, res);
     else
+      
       badRequest(res);
     end
   else

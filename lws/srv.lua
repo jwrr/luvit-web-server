@@ -15,6 +15,7 @@ local session = require'lws.session'
 local srv = {}
 
 srv.session = session
+srv.utils = utils
 
 --------------------------------------------------------------------------
 
@@ -46,7 +47,12 @@ function srv.getBody(req, res)
       local diag_str = page_str .. '\n\n\n' .. res_str .. '\n\n\n' .. req_str .. brotli.cache.tostring()
       diag_str = ''
       if page.urlFields.fileType == 'lua' then
-        body = dofile(page.urlFields.fullPathName) .. "\n" .. diag_str
+        local tmp = dofile(page.urlFields.fullPathName)
+        if type(tmp) == 'string' then
+          body = dofile(page.urlFields.fullPathName) .. "\n" .. diag_str
+        else
+          body = tmp.getHTML()
+        end
       elseif page.urlFields.fileType == 'html' then
         body = utils.slurp(page.urlFields.fullPathName) .. "\n" .. diag_str
       elseif page.urlFields.fileType == 'template' then

@@ -76,14 +76,28 @@ function utils.rand64(len)
 end
 
 
-function utils.split(str, sep)
+function utils.split(s, sep)
   sep = sep or '%w'
   local notsep = '[^' .. sep .. ']+'
-  local pieces = {}
-  for piece in string.gmatch(str, notsep) do
-    pieces[#pieces+1] = piece
+  local parts = {}
+  local cnt = 0
+  if not s then
+    return parts
   end
-  return pieces
+  for piece in string.gmatch(s, notsep) do
+    parts[#parts+1] = piece
+    cnt = cnt + 1
+  end
+  return parts
+end
+
+
+function utils.getNth(s, sep, n)
+  local parts = utils.split(s, sep, 0)
+  if n <= #parts then
+    return parts[n]
+  end
+  return
 end
 
 

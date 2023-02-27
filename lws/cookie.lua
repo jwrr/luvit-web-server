@@ -27,8 +27,6 @@ function cookie.create(res, key, name, maxAge, attr)
   
   cookie.t[name][key] = {expireTime = expireTime}
   
-  print("created cookie:" .. name .. ' ' .. key .. ' ' .. cookie.t[name][key].expireTime)
-  
   if res then
     local nameVal = name .. '=' .. key .. ';'
     local expireDate = ' Expires=' .. utils.getDateUTC(expireTime) .. ';'
@@ -61,8 +59,8 @@ end
 function cookie.getField(fieldName, key, name)
   name = name or cookie.defaultName or 'sid'
   key = key or page.headerCookies[name]
-  print("++++++++++++++++IN cookie.fieldExists. "..name.." "..key..' '..fieldName)
   if cookie.fieldExists(fieldName) then
+    local fieldValue = cookie.t[name][key][fieldName] 
     return cookie.t[name][key][fieldName]
   end
   return nil
