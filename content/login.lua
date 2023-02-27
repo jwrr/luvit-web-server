@@ -3,7 +3,7 @@
 local srv = require'lws.srv'
 local bootstrap = require'content.bootstrap'
 
-local success = srv.session.start(srv)
+local success = srv.session.start(srv.res)
 
 local login = {}
 

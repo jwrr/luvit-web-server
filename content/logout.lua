@@ -1,17 +1,22 @@
 -- logout.lua
 
-local page='lws.page'
+local srv=require'lws.srv'
 local bootstrap = require'content.bootstrap'
 
 local logout = {}
 
+srv.session.stop(srv.res)
+
 local c = {}
-c.title='LWServer Logout Page'
 c.author='jwrr'
-c.description='Logout page to sign out of the LWServer'
-c.css='/styles/bootstrap/signin.css'
-c.css_hack='body {padding-top:65px;}'
 c.body_class='text-center'
+c.css='/styles/bootstrap/signin.css'
+c.description='Logout page to sign out of the LWServer'
+c.navbar_title='LWServer'
+c.please= 'Please log in'
+c.title='LWServer Login Page'
+
+
 c.html = [[
 <form class="form-signin" action="/login.html" method="get">
   <img class="mb-4" src="/images/lua30.gif" alt="" width="72" height="72">

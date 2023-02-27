@@ -4,7 +4,7 @@ local srv = require'lws.srv'
 local page='lws.page'
 local bootstrap = require'content.bootstrap'
 
-srv.session.start(srv)
+srv.session.start(srv.res)
 
 local login = {}
 
