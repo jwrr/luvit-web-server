@@ -41,7 +41,7 @@ function cookie.exists(key, name)
   name = name or cookie.defaultName or 'sid'
   key = key or page.headerCookies[name]
   if cookie.t[name] and cookie.t[name][key] then
-    return cookie.t[name] and cookie.t[name][key] and true
+    return cookie.t[name] and cookie.t[name][key] and cookie.t[name][key]~=nil and true
   end
   return false
 end
@@ -125,10 +125,10 @@ function cookie.isValid(key, name)
   return false
 end
 
-function cookie.getCurrent(name)
-  name = name or cookie.defaultName or 'sid'
-  local id = page.headerCookies[name]
-  if cookie.exists(id, name) then
+function cookie.getCurrent(cookieName)
+  cookieName = cookieName or cookie.defaultName or 'sid'
+  local id = page.headerCookies[cookieName]
+  if cookie.exists(id, cookieName)  then
     return id
   end
   return nil
