@@ -60,7 +60,8 @@ function cookie.getField(fieldName, key, name)
   name = name or cookie.defaultName or 'sid'
   key = key or page.headerCookies[name]
   if cookie.fieldExists(fieldName) then
-    local fieldValue = cookie.t[name][key][fieldName] 
+    local fieldValue = cookie.t[name][key][fieldName] or 'UNDEFINEDxxx'
+    print("IN cookie.getField: fieldExists. fieldValue=".. fieldValue)
     return cookie.t[name][key][fieldName]
   end
   return nil

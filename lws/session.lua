@@ -10,7 +10,7 @@ session.t = {}
 
 function session.start(res)
   session.id = cookie.getCurrent()
-  local userName = page.postParams and page.postParams.email or "Guest"
+  local userName = page.getPostParam('email') or 'Guest'
   session.user = userName
   if true then
     session.id = cookie.create(res)
@@ -29,6 +29,8 @@ end
 
 
 function session.stop(res)
+  session.id = nil
+  session.user = nil
   cookieName = cookieName or cookie.defaultName or 'sid'
   local id = cookie.getCurrent()
   if not id then
@@ -37,7 +39,6 @@ function session.stop(res)
   local user = session.getUser(id)
   print('SESSION.STOP id='..id..' user='..user)
   cookie.remove(id)
-  session.id = nil
   user = session.getUser(id)
   print('SESSION.STOP after remove: user='..user)
   
@@ -57,15 +58,15 @@ function session.getUser(sessionKey, sessionTableName)
   sessionKey = sessionKey or session.id or 'nokey' -- page.headerCookies[sessionTableName] or 'nokey'
   local userName = 'Guest'
   if cookie.exists(sessionKey, sessionTableName) then
-    userName = cookie.getField('userName', sessionKey, sessionTableName)
+    userName = cookie.getField('userName', sessionKey, sessionTableName) or 'Guest'
+    print("IN GETUSER: userName ="..userName)
   end
   return userName
 end
 
 
 function session.isLoggedIn()
-  local isLoggedIn = session.id or page.headerCookies[sessionTableName]
-  isLoggedIn = isLoggedIn and true or false
+  local isLoggedIn = session.id~=nil -- or page.headerCookies[sessionTableName]
   return isLoggedIn
 end
 

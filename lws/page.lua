@@ -38,6 +38,13 @@ function page.getQuery(query)
 end
 
 
+function page.getPostParam(key)
+  if page.postParams and page.postParams[key] then
+    return page.postParams[key]
+  end
+  return nil
+end
+
 
 function page.getUrlFields(rootDir, reqUrl)
   local urlFileName = reqUrl:gsub('%?.*', '')

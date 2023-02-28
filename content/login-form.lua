@@ -1,10 +1,9 @@
 -- login.lua
 
 local srv = require'lws.srv'
-local page='lws.page'
 local bootstrap = require'content.bootstrap'
 
-srv.session.start(srv.res)
+srv.session.continue(srv.res)
 
 local login = {}
 
@@ -14,12 +13,13 @@ c.body_class='text-center'
 c.css='/styles/bootstrap/signin.css'
 c.description='Login page to sign out of the LWServer'
 c.navbar_title="LWServer"
+c.please='Please sign in'
 c.title='LWServer Login Page'
 
 c.html = [[
 <form class="form-signin" action="/login.html" method="post">
   <img class="mb-4" src="/images/lua30.gif" alt="" width="72" height="72">
-  <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+  <h1 class="h3 mb-3 font-weight-normal">]] .. c.please .. [[</h1>
   <label for="inputEmail" class="sr-only">Email address</label>
   <input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
   <label for="inputPassword" class="sr-only">Password</label>
