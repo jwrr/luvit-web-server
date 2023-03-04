@@ -1,11 +1,8 @@
 -- bootstrap.lua
 
 local srv = require'lws.srv'
-local success = srv.session.start(srv.res)
-
 
 local bootstrap = {}
-
 
 local initContent = function(c)
   c = c or {}

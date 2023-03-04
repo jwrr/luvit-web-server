@@ -8,6 +8,7 @@ local mime = require'lws.mime'
 
 page = {}
 
+
 function page.add(k, v)
   page[k] = v
 end
@@ -45,6 +46,11 @@ function page.getPostParam(key)
   return nil
 end
 
+
+function page.getPostParams()
+  if not page.postParams then return {} end
+  return page.postParams
+end
 
 function page.getUrlFields(rootDir, reqUrl)
   local urlFileName = reqUrl:gsub('%?.*', '')

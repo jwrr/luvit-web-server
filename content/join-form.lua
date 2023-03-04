@@ -15,7 +15,7 @@ c.description='Join form for the LWServer'
 c.please='Please Join'
 c.title_site="LWServer"
 c.title_navbar=c.title_site
-c.title_page=c.title_site..' Join Page'
+c.title_page=c.title_site..' Join Form Page'
 
 c.html = [[
 <form class="form-signin" action="/join.html" method="post">
@@ -28,7 +28,7 @@ c.html = [[
   <label for="inputPassword" class="sr-only">Password</label>
   <input type="password" name="password"  id="inputPassword" class="form-control" placeholder="Password" required>
   <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
-  <p class="mt-5 mb-3 text-muted"><a href='/'>Home</a></p>
+  <p class="mt-5 mb-3 text-muted"><a href='/'>Home</a> | <a href='/login-form.html'>Login</a></p>
 </form>
 ]]
 

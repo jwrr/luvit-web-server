@@ -3,6 +3,7 @@
 local srv = require'lws.srv'
 local bootstrap = require'content.bootstrap'
 
+local accountCreated = srv.account.create()
 local success = srv.session.start(srv.res)
 
 local join = {}
@@ -12,9 +13,10 @@ c.author='jwrr'
 c.body_class='text-center'
 c.css_external='/styles/bootstrap/signin.css'
 c.description='Join page to sign out of the LWServer'
-c.title_navbar='LWServer'
 c.please= success and 'Success! Please Login In' or 'Please try again'
-c.title_page='LWServer Join Page'
+c.title_site='LWServer'
+c.title_navbar=c.title_site
+c.title_page=c.title_site..' Join Page'
 
 c.html = [[
 <form class="form-signin" action="/join.html" method="post">

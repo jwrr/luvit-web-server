@@ -2,8 +2,10 @@
 
 -- lws.lua
 
+local rootpath='/var/www/html'
+
 package.path  = "/var/local/luarocks-3.8.0/lua_modules/share/lua/5.1/?.lua;" .. package.path
-package.path  = package.path..';/var/www/html/?.lua;/luvit/deps/?.lua'
+package.path  = package.path..';'..rootpath..'/?.lua;/luvit/deps/?.lua'
 package.cpath = "/var/local/luarocks-3.8.0/lua_modules/lib/lua/5.1/?.so;" .. package.cpath
 package.cpath = "/usr/lib/x86_64-linux-gnu/lua/5.1/?.so;" .. package.cpath
 
@@ -12,6 +14,8 @@ local http = require'http'
 local https = require'https'
 local url = require'url'
 local page = require'lws.page'
+page.rootpath=rootpath
+
 local srv = require'lws.srv'
 local db = require'lws.db'
 local brotli = require'lws.brotli'
@@ -20,7 +24,7 @@ local utils = require'lws.utils'
 
 local function onRequest(req, res)
   page.protocol = 'https'
-  page.sitePath = '/var/www/html/content'
+  page.sitepath = rootpath..'/content'
   body = srv.getBody(req, res)
   res:finish(body)
 end
@@ -94,7 +98,7 @@ end
 
 http.createServer(function (req, res)
   page.protocol = 'http'
-  page.sitePath = '/var/www/html/content'
+  page.sitepath = rootpath..'/content'
 
   if req.url=='/todo' then
     if req.method=='GET' then
@@ -113,10 +117,8 @@ http.createServer(function (req, res)
       res:finish(body)
     end
   end
-end):listen(80, '0.0.0.0')
+end):listen(80)
 
--- http.createServer(onRequest):listen(8080)
--- print("Server listening at http://localhost:8080/")
 
 https.createServer({
   key = fs.readFileSync("/var/www/html/key.pem"),

@@ -3,21 +3,58 @@
 local utils = {}
 
 function utils.slurp(file)
-    local f = assert(io.open(file, "rb"))
-    local content = f:read("*all")
-    f:close()
-    return content
+  local f = assert(io.open(file, 'rb'))
+  local content = f:read('*all')
+  f:close()
+  return content
+end
+
+
+function utils.writeFile(filename, s)
+  if not filename then return end
+  if not s then return end
+  local f = assert(io.open(filename, 'w'))
+  print('IN utils.writeFile. filename='..filename..' s='..s)
+  local writeSuccessful = f:write(s)
+  local closeSuccessful = f:close()
+  local success = writeSuccessful and readSuccessful and true or false
+  return success
 end
 
 
 function utils.fileExists(name)
-   local f=io.open(name, "r")
-   if f~=nil then io.close(f) return true else return false end
+  local f=io.open(name, "r")
+  if f~=nil then io.close(f) return true else return false end
 end
 
 
 local tostring_skiptable = {socket = 1, handlers = 2,}
 
+
+function utils.rpad(s, n)
+  s = s or ''
+  local str = tostring(s)
+  local p = n - #str
+  return str .. string.rep(' ', p)
+end
+
+
+
+utils.luaTable = {
+	["jwrr.com@gmail.com"] = {
+		["user"] =             "jwrr",
+		["password"] =         "1234",
+		["email"] =            "jwrr.com@gmail.com"
+	},
+	["jacob2@gmail.com"] = {
+		["user"] =             "jacob2",
+		["password"] =         "asdfasfasdf",
+		["email"] =            "jacob2@gmail.com"
+	}
+}
+
+
+--[[
 function utils.tostring(t, indent, title)
   if type(t) ~= 'table' then
     return tostring(t)
@@ -31,20 +68,17 @@ function utils.tostring(t, indent, title)
     return json .. indentStr .. 'STACK OVERFLOW\n' .. indentStr .. '}\n'
   end
   for k,v in pairs(t) do
-    local kStr = tostring(k)
     local skip = tostring_skiptable[k]
     if not skip then
-      json = json .. indentStr .. '"' .. k .. '"' .. ': '
-      local tabSize = 4
-      local spaceSize = 3 - math.floor(#kStr/tabSize)
-      local spaces = string.rep('\t', spaceSize)
+      local kStr = utils.rpad('"'..tostring(k)..'": ', 20)
+      json = json .. indentStr .. kStr
       if type(v) == 'table' then
         json = json .. utils.tostring(v, indent)
       elseif type(v) == 'function' then
-        json = json .. spaces .. '"**function**",\n'
+        json = json .. '"**function**",\n'
       else
         local s = (type(v)==string) and v or tostring(v)
-        json = json .. spaces .. '"' .. s .. '",\n'
+        json = json .. '"' .. s .. '",\n'
       end
     end
   end
@@ -59,6 +93,59 @@ function utils.tostring(t, indent, title)
   end
   json = json .. indentStr .. '}' .. comma .. '\n'
   return title .. json
+end
+--]]
+
+
+function utils.tostring(t, indent, title, format)
+  if type(t) ~= 'table' then
+    return tostring(t)
+  end
+  format = format or 'json'
+  indent = indent or 0
+  indent = indent + 1
+  title = title or ''
+  local indentStr = (indent > 0) and string.rep('\t', indent) or ''
+  local sss = '{\n'
+  if indent > 10 then
+    return sss .. indentStr .. 'STACK OVERFLOW\n' .. indentStr .. '}\n'
+  end
+  for k,v in pairs(t) do
+    local skip = tostring_skiptable[k]
+    if not skip then
+      local kStr = tostring(k)
+      if format:lower() == "lua" then
+        local isValidIdentifier = kStr:find('^[%a_][%w_]*$')
+        if isValidIdentifier then
+          kStr = utils.rpad(kStr..' = ', 20)
+        else
+          kStr = utils.rpad('["'..kStr..'"] = ', 20)
+        end
+      else -- default to json
+        kStr = utils.rpad('"'..tostring(kStr)..'": ', 20)
+      end
+      sss = sss .. indentStr .. kStr
+      if type(v) == 'table' then
+        sss = sss .. utils.tostring(v, indent, '', format)
+      elseif type(v) == 'function' then
+        sss = sss .. '"**function**",\n'
+      else
+        local s = (type(v)==string) and v or tostring(v)
+        sss = sss .. '"' .. s .. '",\n'
+      end
+    end
+  end
+
+  sss = sss:gsub(',\n$', '\n')
+  indent = indent - 1
+  local comma = (indent>0) and ',' or ''
+  local indentStr = (indent > 0) and string.rep('\t', indent) or ''
+  if sss:find('{\n$') then
+    sss = sss:gsub('{\n$', '{')
+    indentStr = ''
+  end
+  sss = sss .. indentStr .. '}' .. comma .. '\n'
+  return title .. sss
 end
 
 

@@ -11,6 +11,7 @@ local template = require'lws.template'
 local mime = require'lws.mime'
 local cookie = require'lws.cookie'
 local session = require'lws.session'
+local account = require'lws.account'
 
 local srv = {}
 
@@ -24,8 +25,9 @@ function srv.getBody(req, res)
   srv.res = res
   srv.req = req
   srv.page = page
+  srv.account = account
 
-  page.urlFields = page.getUrlFields(page.sitePath, req.url)
+  page.urlFields = page.getUrlFields(page.sitepath, req.url)
   local body = ''
   if page.urlFields.fileFound then
     page.headers = page.getHeaders(req)
@@ -58,7 +60,7 @@ function srv.getBody(req, res)
       elseif page.urlFields.fileType == 'template' then
         body = template.replace(req, res, page.urlFields, page.urlFields.fullPathName)
       elseif page.urlFields.fileType == 'md' then
-        local markdownTemplateFile = page.sitePath .. '/templates/markdown.template'
+        local markdownTemplateFile = page.sitepath .. '/templates/markdown.template'
         body = utils.slurp(page.urlFields.fullPathName)
         body = page.convertMarkdown(req, res, page.urlFields, markdownTemplateFile, body)
       else
@@ -69,7 +71,7 @@ function srv.getBody(req, res)
 --       end
     end
   else
-    body = err.handler(req, res, page.urlFields, 404, page.sitePath)
+    body = err.handler(req, res, page.urlFields, 404, page.sitepath)
   end
   mime.setHeader(res)
   res:setHeader('Content-Length', #body)

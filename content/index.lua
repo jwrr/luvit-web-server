@@ -13,7 +13,8 @@ c.author='jwrr'
 c.css='/styles/bootstrap/signin.css'
 c.css_hack='body {padding-top:65px;} img {height:200px}'
 c.description='Index page for LWServer'
-c.title_navbar="LWServer"
+c.title_site="LWServer"
+c.title_navbar=c.title_site
 c.title_page='LWServer Home Page'
 
 c.html = [[
