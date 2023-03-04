@@ -113,7 +113,7 @@ http.createServer(function (req, res)
       res:finish(body)
     end
   end
-end):listen(1337, '0.0.0.0')
+end):listen(80, '0.0.0.0')
 
 -- http.createServer(onRequest):listen(8080)
 -- print("Server listening at http://localhost:8080/")
@@ -121,8 +121,8 @@ end):listen(1337, '0.0.0.0')
 https.createServer({
   key = fs.readFileSync("/var/www/html/key.pem"),
   cert = fs.readFileSync("/var/www/html/cert.pem"),
-}, onRequest):listen(8443)
+}, onRequest):listen(443)
 
-print("Server listening at https://localhost:8443/")
-print('Server running at http://localhost:1337/')
+print("Server listening at https://localhost:443/")
+print('Server running at http://localhost:80/')
 

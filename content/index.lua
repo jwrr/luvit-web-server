@@ -13,8 +13,8 @@ c.author='jwrr'
 c.css='/styles/bootstrap/signin.css'
 c.css_hack='body {padding-top:565px;} img {height:200px}'
 c.description='Index page for LWServer'
-c.navbar_title="LWServer"
-c.title='LWServer Home Page'
+c.title_navbar="LWServer"
+c.title_page='LWServer Home Page'
 
 c.html = [[
 
@@ -72,7 +72,7 @@ luasql-sqlite3</a>.  Here is an <a href="/examples/db.html">example database pag
 <li><a href="/examples/test2.html">Link to test2.html</a></li>
 <li><a href="/examples/README.md">Link to README.md. Markdown is converted to html.</a></li>
 <li><a href="/examples/bootstrap-start.html">404 Not Found Example</a></li>
-<li><a href="/examples/bootstrap-blog.html">Link to bootstrap based blog.html</a></li>
+<li><a href="/blog.lua">Blog</a></li>
 <li><a href="/examples/test3.lua">Link to test3.lua</a></li>
 <li><a href="/examples/test3.html">Link to test3.html (should internally redirect to test3.lua)</a></li>
 <li><a href="/examples/test4.template">Link to test4.template (templates do simple substutions)</a></li>

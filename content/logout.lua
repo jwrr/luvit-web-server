@@ -10,11 +10,11 @@ srv.session.stop(srv.res)
 local c = {}
 c.author='jwrr'
 c.body_class='text-center'
-c.css='/styles/bootstrap/signin.css'
+c.css_external='/styles/bootstrap/signin.css'
 c.description='Thank You!'
-c.navbar_title="LWServer"
+c.title_navbar="LWServer"
 c.please='Thank You'
-c.title='LWServer Logout Page'
+c.title_page='LWServer Logout Page'
 
 c.html = [[
 <form class="form-signin" action="/login.html" method="post">

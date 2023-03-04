@@ -10,11 +10,11 @@ local login = {}
 local c = {}
 c.author='jwrr'
 c.body_class='text-center'
-c.css='/styles/bootstrap/signin.css'
+c.css_external='/styles/bootstrap/signin.css'
 c.description='Login page to sign out of the LWServer'
-c.navbar_title='LWServer'
+c.title_navbar='LWServer'
 c.please= success and 'Success... you are logged in' or 'Please try again'
-c.title='LWServer Login Page'
+c.title_page='LWServer Login Page'
 
 c.html = [[
 <form class="form-signin" action="/login.html" method="post">
