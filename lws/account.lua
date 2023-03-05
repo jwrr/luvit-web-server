@@ -2,6 +2,7 @@
 
 local utils=require'lws.utils'
 local page=require'lws.page'
+local password=require'lws.password'
 
 local account = {}
 
@@ -14,10 +15,13 @@ account.create = function(skipSave,k,v)
     k = page.postParams['email']
     if not k then return end
   end
+  k = string.lower(k)
   if not v then
     if not page.postParams then return end
     v = page.postParams
   end
+  if not v['password'] then return end
+  v["password"] = password.encode(v['password'], k)
   account.db[k] = v
   if skipSave then return true end
   local success = account.save()
@@ -90,10 +94,11 @@ end
 
 
 function account.validPassword(k, pw)
-  if not k or not pw then return false end
-  local password = account.getField(k, 'password')
-  if not password then return false end
-  return pw == password
+  if not k or not pw then return end
+  local encodedPassword = account.getField(k, 'password')
+  if not encodedPassword then return end
+  local ok = password.check(encodedPassword, pw)
+  return ok
 end
 
 

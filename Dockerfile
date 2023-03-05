@@ -65,7 +65,15 @@ RUN luarocks install lcmark
 # RUN luarocks install luasql-sqlite3
 RUN apt-get -y install lua-sql-sqlite3
 RUN luarocks install lua-brotli
+RUN apt-get install argon2 libargon2-0-dev 
+# RUN luarocks install argon2
+RUN git clone --branch 3.0.1 https://github.com/thibaultcha/lua-argon2.git
+WORKDIR lua-argon2
+RUN make LUA_INCDIR=/usr/include/lua5.1 INST_LIBDIR=/usr/lib/x86_64-linux-gnu/lua/5.1
+RUN make LUA_INCDIR=/usr/include/lua5.1 INST_LIBDIR=/usr/lib/x86_64-linux-gnu/lua/5.1 install
+
 
 ## ==============================================================
+WORKDIR /var/www/html/
 CMD ["/var/www/html/lws.lua"]
 

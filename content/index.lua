@@ -57,6 +57,10 @@ are already compressed.
 <a href="https://www.sqlite.org/index.html">SQLite3</a> is supported using <a href="https://luarocks.org/modules/tomasguisasola/luasql-sqlite3">
 luasql-sqlite3</a>.  Here is an <a href="/examples/db.html">example database page</a>.
 
+<h3>Password Hash</h3>
+The <a href="https://github.com/p-h-c/phc-winner-argon2">Argon2</a> password hash is supported using
+<a href="https://github.com/thibaultcha/lua-argon2">lua-argon2</a>.
+
 <h3>Images</h3>
 <p>GIF, PNG, JPG, SVG and ICO image formats are supported. Here are a few examples.</p>
 
