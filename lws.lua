@@ -9,18 +9,19 @@ package.path  = package.path..';'..rootpath..'/?.lua;/luvit/deps/?.lua'
 package.cpath = "/var/local/luarocks-3.8.0/lua_modules/lib/lua/5.1/?.so;" .. package.cpath
 package.cpath = "/usr/lib/x86_64-linux-gnu/lua/5.1/?.so;" .. package.cpath
 
-local fs = require'fs'
-local http = require'http'
-local https = require'https'
-local url = require'url'
-local page = require'lws.page'
+local fs=require'fs'
+local http=require'http'
+local https=require'https'
+local url=require'url'
+
+local page=require'lws.page'
 page.rootpath=rootpath
 
-local srv = require'lws.srv'
-local db = require'lws.db'
-local brotli = require'lws.brotli'
-local utils = require'lws.utils'
-
+local srv=require'lws.srv'
+local db=require'lws.db'
+local brotli=require'lws.brotli'
+local utils=require'lws.utils'
+local upload=require'lws.upload'
 
 local function onRequest(req, res)
   page.protocol = 'https'
@@ -69,7 +70,7 @@ function add(req, res)
     --p(obj)
     table.insert(items,obj.item);
     parse.
-    
+
     show(res);
   end);
 end
@@ -83,7 +84,7 @@ function handlePOST(req, res)
     local obj = qs.parse(postQuery);
     --p(obj)
     table.insert(items,obj.item);
-    
+
     page.postQuery = utils.decodeURL(postQuery)
     page.postParams = utils.splitKV(page.postQuery, '&', '=')
     page.requestParams = page.postParams
@@ -95,27 +96,12 @@ function handlePOST(req, res)
   end);
 end
 
-
-function handleUpload(req, res)
-  local uploadfile = '';
-  --req.setEncoding('utf8');
-  req:on('data', function(chunk) uploadfile = uploadfile .. chunk; end);
-  req:on('end', function()
-    utils.writeFile('/var/www/html/poiuy', uploadfile)
-    body = "upload complete"
-    res:setHeader('Content-Type', 'text/html');
-    res:setHeader('Content-Length', #body);
-    res:finish(body);
-  end);
-end
-
-
 http.createServer(function (req, res)
   page.protocol = 'http'
   page.sitepath = rootpath..'/content'
 
   if req.url=='/upload' then
-    handleUpload(req, res)
+    upload.handleUpload(req, res)
   elseif req.url=='/todo' then
     if req.method=='GET' then
       show(res)

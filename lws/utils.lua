@@ -14,7 +14,6 @@ function utils.writeFile(filename, s)
   if not filename then return end
   if not s then return end
   local f = assert(io.open(filename, 'w'))
-  print('IN utils.writeFile. filename='..filename..' s='..s)
   local writeSuccessful = f:write(s)
   local closeSuccessful = f:close()
   local success = writeSuccessful and readSuccessful and true or false
@@ -27,8 +26,6 @@ function utils.fileExists(name)
   if f~=nil then io.close(f) return true else return false end
 end
 
-
-local tostring_skiptable = {socket = 1, handlers = 2,}
 
 
 function utils.rpad(s, n)
@@ -96,8 +93,10 @@ function utils.tostring(t, indent, title)
 end
 --]]
 
+local tostring_skiptable = {socket = 1, handlers = 2,}
 
-function utils.tostring(t, indent, title, format)
+function utils.tostring(t, indent, title, format, skips)
+  skips = skips or tostring_skiptable or {}
   if type(t) ~= 'table' then
     return tostring(t)
   end
@@ -111,7 +110,7 @@ function utils.tostring(t, indent, title, format)
     return sss .. indentStr .. 'STACK OVERFLOW\n' .. indentStr .. '}\n'
   end
   for k,v in pairs(t) do
-    local skip = tostring_skiptable[k]
+    local skip = skips[k]
     if not skip then
       local kStr = tostring(k)
       if format:lower() == "lua" then
@@ -126,7 +125,7 @@ function utils.tostring(t, indent, title, format)
       end
       sss = sss .. indentStr .. kStr
       if type(v) == 'table' then
-        sss = sss .. utils.tostring(v, indent, '', format)
+        sss = sss .. utils.tostring(v, indent, '', format, skips)
       elseif type(v) == 'function' then
         sss = sss .. '"**function**",\n'
       else
@@ -188,8 +187,59 @@ function utils.getNth(s, sep, n)
 end
 
 
+function utils.startsWith(haystack, needle, plain)
+  if not haystack or not needle then return end
+  local found = haystack:find(needle, 1, plain) ~= nil
+  return found
+end
+
+
+function utils.endsWith(haystack, needle, plain)
+  if not haystack or not needle then return end
+  return haystack:find(needle..'$', 1, plain) and true or false
+end
+
+
+function utils.contains(haystack, needle, plain)
+  if not haystack or not needle then return end
+  return haystack:find(needle, 1, plain) and true or false
+end
+
+
+function utils.isBlank(s)
+  if not s then return true end
+  return utils.trim(s) == ''
+end
+
+
+function utils.getValue(s, name)
+  if not s or not name then return end
+  local p = '.*'..name..'%s*=%s*"([^"]*).*'
+  if not s:find(p) then return end
+  local v = s:gsub(p, '%1')
+  return v
+end
+
+function utils.lastWord(s)
+  if not s then return end
+  s = utils.trim(s)
+  local lw = s:gsub('.*%s', '')
+  print ("IN utils.lastWord lw="..lw..' s='..s)
+  return lw
+end
+
 function utils.trim(s)
   return s:gsub("^%s+", ""):gsub("%s+$", "")
+end
+
+
+function utils.rtrim(s)
+  return s:gsub("%s+$", "")
+end
+
+
+function utils.removeCRLF(s)
+   return s:gsub("\r\n$", "")
 end
 
 
