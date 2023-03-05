@@ -96,18 +96,33 @@ function handlePOST(req, res)
 end
 
 
+function handleUpload(req, res)
+  local uploadfile = '';
+  --req.setEncoding('utf8');
+  req:on('data', function(chunk) uploadfile = uploadfile .. chunk; end);
+  req:on('end', function()
+    utils.writeFile('/var/www/html/poiuy', uploadfile)
+    body = "upload complete"
+    res:setHeader('Content-Type', 'text/html');
+    res:setHeader('Content-Length', #body);
+    res:finish(body);
+  end);
+end
+
+
 http.createServer(function (req, res)
   page.protocol = 'http'
   page.sitepath = rootpath..'/content'
 
-  if req.url=='/todo' then
+  if req.url=='/upload' then
+    handleUpload(req, res)
+  elseif req.url=='/todo' then
     if req.method=='GET' then
-      show(res);
+      show(res)
     elseif req.method=='POST' then
-      handlePOST(req, res);
+      handlePOST(req, res)
     else
-      
-      badRequest(res);
+      badRequest(res)
     end
   else
     if req.method=='POST' then
