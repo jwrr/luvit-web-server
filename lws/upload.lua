@@ -29,14 +29,12 @@ function upload.parseMulti(s)
   local filename = nil
   local contentType = nil
   for line in s:gmatch('.-\n') do
-    print('IN parseUpload: state='..tostring(state))
     if state == State.first then
       if not utils.startsWith(line, '----', true) then
         t.err = 'Error: invalid barrier - ' .. line
         return t
       end
       t.barrier = utils.rtrim(line)
-      print('IN parseUpload: barrier='..t.barrier)
       state = State.content
     elseif state == State.content then
       if utils.startsWith(line, 'Content-Disposition', true) then
@@ -78,7 +76,6 @@ function upload.parseMulti(s)
         end
       end
     elseif state == State.value then
-      print("NAME="..name)
       if utils.startsWith(line, t.barrier) then
         t[name] = utils.rtrim(t[name])
         state = State.content
@@ -101,7 +98,7 @@ end
 function upload.handleUpload(req, res)
   local uploadfile = '';
   --req.setEncoding('utf8');
-  req:on('data', function(chunk) uploadfile = uploadfile .. chunk .. "xxx" end);
+  req:on('data', function(chunk) uploadfile = uploadfile .. chunk end);
   req:on('end', function()
     local t = upload.parseMulti(uploadfile)
     print(utils.tostring(t,0,'uploadfile = ', 'json', {data=1}))
