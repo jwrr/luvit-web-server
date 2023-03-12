@@ -3,7 +3,6 @@
 local utils=require'lws.utils'
 local page=require'lws.page'
 local password=require'lws.password'
-
 local account = {}
 
 account.db = {}
@@ -18,10 +17,12 @@ account.create = function(skipSave,k,v)
   k = string.lower(k)
   if not v then
     if not page.postParams then return end
+    page.encryptPassword()
     v = page.postParams
   end
+  if not v['email'] then return end
+  if not v['user'] then return end
   if not v['password'] then return end
-  v["password"] = password.encode(v['password'], k)
   account.db[k] = v
   if skipSave then return true end
   local success = account.save()
@@ -59,7 +60,8 @@ end
 account.save = function(filename)
   filename = filename or page.rootpath.."/accounts.db"
   if not filename then return end
-  local success = utils.writeFile(filename, utils.tostring(account.db, 0, 'db = ', 'lua'))
+  local fileContent = utils.tostring(account.db, 0, 'db = ', 'lua')
+  local success = utils.writeFile(filename, fileContent)
   return success
 end
 
@@ -101,9 +103,16 @@ function account.validPassword(k, pw)
   return ok
 end
 
+function account.validEncryptedPassword(k, encryptedPassword)
+  if not k or not encryptedPassword then return end
+  local storedPassword = account.getField(k, 'password')
+  if not storedPassword then return end
+  local ok = encryptedPassword == storedPassword
+  return ok
+end
 
-function account.getUser(k, pw)
-  if account.validPassword(k, pw) then
+function account.getUser(k, encryptedPassword)
+  if account.validEncryptedPassword(k, encryptedPassword) then
     local user = account.getField(k, 'user')
     return user
   end

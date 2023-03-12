@@ -10,7 +10,7 @@ local initContent = function(c)
   c.body_class = c.body_class and ' class='..c.body_class or ''
   c.css_external = c.css_external and '<link href="'..c.css_external..'" rel="stylesheet">\n' or ''
   c.css_internal = c.css_internal or ''
-  c.css_hack = c.css_hack or 'body {padding-top:65px;}' or ''
+  c.css_hack = c.css_hack or ''
   if c.css_hack ~= '' then
     c.css_hack = '<style>'..c.css_hack..'</style>'
   end
@@ -29,7 +29,8 @@ end
 
 bootstrap.getHeader = function(c)
   c = initContent(c)
-  return [[
+
+local oldhtml = [[
 <!doctype html>
 <html lang="en">
   <head>
@@ -54,6 +55,25 @@ bootstrap.getHeader = function(c)
 
   <body]]..c.body_class..[[>
 ]]
+
+  return [[
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom styles for this template -->
+    ]] .. c.css_external .. [[
+    ]] .. c.css_hack .. [[
+    ]] .. c.css_internal .. [[
+
+  </head>
+  <body style="padding-top:68px;">
+]]
 end
 
 
@@ -62,17 +82,21 @@ bootstrap.getNavbarFixed = function(c)
   local loginRelatedLinks = ''
   if c.isLoggedIn then
     loginRelatedLinks = [[
-          <li class="nav-item active"><a class="nav-link" href="/logout.html">Logout</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="/]]..c.user..[[">]]..c.user..[[</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/logout.html">Logout</a></li>
+          <li class="nav-item"><a class="nav-link active" href="#">Like</a></li>
+          <li class="nav-item"><a class="nav-link active" href="#">Comment</a></li>
     ]]
   else
     loginRelatedLinks = [[
-          <li class="nav-item active"><a class="nav-link" href="/login-form.html">Login</a></li>
-          <li class="nav-item active"><a class="nav-link" href="/join-form.html">Join</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/login-form.html">Login</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/join-form.html">Join</a></li>
+          <li class="nav-item"><a class="nav-link disabled" href="#">Like</a></li>
+          <li class="nav-item"><a class="nav-link disabled" href="#">Comment</a></li>
     ]]
   end
 
-  return [[
-    <!-- Navbar fixed -->
+local oldhtml = [[    <!-- Navbar fixed -->
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
       <a class="navbar-brand" href="#">]]..c.title_navbar..[[</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false"
@@ -82,10 +106,8 @@ bootstrap.getNavbarFixed = function(c)
 
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item active"><a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a></li>]]
+          <li class="nav-item active"><a class="nav-link" href="/]]..c.user..[[">]]..c.user..[[ <span class="sr-only">(current)</span></a></li>]]
           .. loginRelatedLinks .. [[
-          <li class="nav-item"><a class="nav-link disabled" href="#">Comment</a></li>
-          <li class="nav-item"><a class="nav-link disabled" href="#">Like</a></li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Manage</a>
             <div class="dropdown-menu" aria-labelledby="dropdown01">
@@ -101,6 +123,35 @@ bootstrap.getNavbarFixed = function(c)
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
       </div>
+    </nav>
+]]
+
+  return [[
+    <!-- fixed navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/">LWServer</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle +
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto">
+              ]]..loginRelatedLinks..[[
+              <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Manage</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item disabled" href="/upload-form.html">New</a></li>
+                  <li><a class="dropdown-item disabled" href="/edit-form.html">Edit</a></li>
+                  <li><hr class="dropdown-divider" Disabled></li>
+                  <li><a class="dropdown-item disabled" href="/join-form.html" disabled>Update Account</a></li>
+                </ul>
+              </li>
+            </ul>
+            <form class="d-flex" role="search">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+          </div>
+        </div>
     </nav>
 ]]
 end
@@ -131,22 +182,46 @@ return [[
 end
 
 
+bootstrap.getBanner = function(c)
+return [[
+    <!-- dismissable banner -->
+    <div class="container-fluid p-0 border-0 alert alert-dismissible">
+        <button class="btn-close bg-light" aria-label="close" data-bs-dismiss="alert"></button>
+        <img src="./images/banner.jpg" alt="Dismissable Banner" class="w-100">
+    </div>
+]]
+end
+
+
 bootstrap.getMain = function(c)
   c = initContent(c)
-  return [[
-    <!-- Main Container -->
+  local oldhtml = [[
     <main class="container">
-      <div class="starter-template">
+      <div>
       ]] .. c.html .. [[
       </div>
     </main>
+]]
+
+  return [[
+
+    <div class="container">
+      <div class="row">
+          ]] .. c.html .. [[
+          <aside class="col col-2 border-start d-none d-md-flex alert alert-dismissible" style="max-width:300px;min-width:300px;">
+              <button class="btn-close bg-white" aria-label="close" data-bs-dismiss="alert"></button>
+              Sidebar
+          </aside>
+      </div>
+    </div>
+
 ]]
 end
 
 
 bootstrap.getFooter = function(c)
   c = initContent(c)
-  return [[
+  local oldhtml = [[
     <!-- Footer
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -157,12 +232,18 @@ bootstrap.getFooter = function(c)
   </body>
 </html>
 ]]
+
+  return [[
+  </body>
+</html>
+]]
+
 end
 
 bootstrap.getHTML = function(c)
   return bootstrap.getHeader(c) ..
-         bootstrap.getNavbarFixed(c) ..
-         bootstrap.getNavbarScrolling(c) ..
+        bootstrap.getNavbarFixed(c) ..
+        bootstrap.getNavbarScrolling(c) ..
          bootstrap.getMain(c) ..
          bootstrap.getFooter(c)
 end -- getHTML

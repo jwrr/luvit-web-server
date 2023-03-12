@@ -16,7 +16,7 @@ function utils.writeFile(filename, s)
   local f = assert(io.open(filename, 'w'))
   local writeSuccessful = f:write(s)
   local closeSuccessful = f:close()
-  local success = writeSuccessful and readSuccessful and true or false
+  local success = writeSuccessful and closeSuccessful
   return success
 end
 
@@ -178,8 +178,29 @@ function utils.split(s, sep)
 end
 
 
+function utils.getTableValueFromDotKey(t, dotkey)
+  if not t or not dotkey then return end
+  local parts = utils.split(dotkey, '.')
+  for i,p in ipairs(parts) do
+    if not t[p] then
+      return
+    end
+    t = t[p]
+  end
+  if type(t) == 'function' then
+    return t()
+  end
+  return t
+end
+
+
+function utils.getTableStringFromDotKey(t, dotkey)
+  return utils.tostring(utils.getTableValueFromDotKey(t, dotkey))
+end
+
+
 function utils.getNth(s, sep, n)
-  local parts = utils.split(s, sep, 0)
+  local parts = utils.split(s, sep)
   if n <= #parts then
     return parts[n]
   end
@@ -220,13 +241,14 @@ function utils.getValue(s, name)
   return v
 end
 
+
 function utils.lastWord(s)
   if not s then return end
   s = utils.trim(s)
   local lw = s:gsub('.*%s', '')
-  print ("IN utils.lastWord lw="..lw..' s='..s)
   return lw
 end
+
 
 function utils.trim(s)
   return s:gsub("^%s+", ""):gsub("%s+$", "")
@@ -240,6 +262,17 @@ end
 
 function utils.removeCRLF(s)
    return s:gsub("\r\n$", "")
+end
+
+
+-- Returns hash of matches with number of occurrences for each match.
+function utils.getMatches(haystack, needle)
+  if not haystack or not needle then return {} end
+  local matches = {}
+  for m in string.gmatch(haystack, needle) do
+    matches[m] = matches[m] and matches[m] + 1 or 1;
+  end
+  return matches
 end
 
 

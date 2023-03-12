@@ -18,7 +18,7 @@
 </head>
 <body>
 
-{page_markdown}
+{{page_markdown}}
 
 </body>
 </html>

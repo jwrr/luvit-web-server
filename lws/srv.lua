@@ -58,11 +58,11 @@ function srv.getBody(req, res)
       elseif page.urlFields.fileType == 'html' then
         body = utils.slurp(page.urlFields.fullPathName) .. "\n" .. diag_str
       elseif page.urlFields.fileType == 'template' then
-        body = template.replace(req, res, page.urlFields, page.urlFields.fullPathName)
+        body = template.replace(req, res, page.urlFields, page.urlFields.fullPathName, srv)
       elseif page.urlFields.fileType == 'md' then
         local markdownTemplateFile = page.sitepath .. '/templates/markdown.template'
         body = utils.slurp(page.urlFields.fullPathName)
-        body = page.convertMarkdown(req, res, page.urlFields, markdownTemplateFile, body)
+        body = page.convertMarkdown(req, res, page.urlFields, markdownTemplateFile, body, srv)
       else
         body = utils.slurp(page.urlFields.fullPathName)
       end
@@ -71,7 +71,7 @@ function srv.getBody(req, res)
 --       end
     end
   else
-    body = err.handler(req, res, page.urlFields, 404, page.sitepath)
+    body = err.handler(req, res, page.urlFields, 404, page.sitepath, srv)
   end
   mime.setHeader(res)
   res:setHeader('Content-Length', #body)

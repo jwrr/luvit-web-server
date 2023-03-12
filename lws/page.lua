@@ -1,10 +1,11 @@
 -- lws/page.lua
 
-local lcmark = require'lcmark'
-local utils = require'lws.utils'
-local err = require'lws.err'
-local template = require'lws.template'
-local mime = require'lws.mime'
+local lcmark=require'lcmark'
+local utils=require'lws.utils'
+local err=require'lws.err'
+local template=require'lws.template'
+local mime=require'lws.mime'
+local password=require'lws.password'
 
 page = {}
 
@@ -39,6 +40,11 @@ function page.getQuery(query)
 end
 
 
+function page.setPostParam(k, v)
+  if not k then return end
+  page.postParams[k] = v
+end
+
 function page.getPostParam(key)
   if page.postParams and page.postParams[key] then
     return page.postParams[key]
@@ -51,6 +57,38 @@ function page.getPostParams()
   if not page.postParams then return {} end
   return page.postParams
 end
+
+
+function page.encryptPassword()
+  local pw = page.getPostParam('password')
+  local email = page.getPostParam('email')
+  if not pw or not email then return end
+  local encryptedPassword = password.encode(pw, email)
+  page.setPostParam('password', encryptedPassword)
+end
+
+
+function page.renameMissingFile(fileFound, fileType, fullPathName, baseName)
+  if not fileFound then
+    local fullPathNameLua = fullPathName:gsub('.html$', '') .. '.lua'
+    local isLua = utils.fileExists(fullPathNameLua)
+    local fullPathNameTemplate = fullPathName:gsub('.html$', '') .. '.template'
+    local isTemplate = utils.fileExists(fullPathNameTemplate)
+    if isLua then
+      fileFound = true
+      fileType = 'lua'
+      fullPathName = fullPathNameLua
+      baseName = fullPathName:gsub('.*/', '')
+    elseif isTemplate then
+      fileFound = true
+      fileType = 'template'
+      fullPathName = fullPathNameTemplate
+      baseName = fullPathName:gsub('.*/', '')
+    end
+  end
+  return fileFound, fileType, fullPathName, baseName
+end
+
 
 function page.getUrlFields(rootDir, reqUrl)
   local urlFileName = reqUrl:gsub('%?.*', '')
@@ -69,23 +107,7 @@ function page.getUrlFields(rootDir, reqUrl)
   local fullPathName = rootDir .. urlFileName;
   local fileFound = utils.fileExists(fullPathName)
 
-  local fullPathNameLua = fullPathName:gsub('.html$', '.lua')
-  local isLua = not fileFound and utils.fileExists(fullPathNameLua)
-  if isLua then
-    fileFound = true
-    fileType = 'lua'
-    fullPathName = fullPathNameLua
-    baseName = baseName:gsub('.html$', '.lua')
-  end
-
-  local fullPathNameTemplate = fullPathName:gsub('.html$', '.template')
-  local isTemplate = not fileFound and utils.fileExists(fullPathNameTemplate)
-  if isTemplate then
-    fileFound = true
-    fileType = 'template'
-    fullPathName = fullPathNameTemplate
-    baseName = baseName:gsub('.html$', '.template')
-  end
+  fileFound, fileType, fullPathName, baseName = page.renameMissingFile(fileFound, fileType, fullPathName, baseName)
 
   local mime = mime.get(fileType)
 
@@ -95,10 +117,10 @@ function page.getUrlFields(rootDir, reqUrl)
 end
 
 
-function page.convertMarkdown(req, res, urlFields, markdownTemplateFile, body)
+function page.convertMarkdown(req, res, urlFields, markdownTemplateFile, body, srv)
   local middle, metadata = lcmark.convert(body, "html", {smart = true})
   urlFields.markdown = middle
-  local html = template.replace(req, res, urlFields, markdownTemplateFile)
+  local html = template.replace(req, res, urlFields, markdownTemplateFile, srv)
   return html
 end
 

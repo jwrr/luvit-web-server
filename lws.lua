@@ -96,6 +96,7 @@ function handlePOST(req, res)
   end);
 end
 
+
 http.createServer(function (req, res)
   page.protocol = 'http'
   page.sitepath = rootpath..'/content'

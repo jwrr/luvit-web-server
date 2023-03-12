@@ -3,18 +3,29 @@
 local cookie=require'lws.cookie'
 local utils=require'lws.utils'
 local page=require'lws.page'
+local password=require'lws.password'
 local account=require'lws.account'
+
 local session = {}
 
 
-function session.getUserFromAccount(email, password)
+function session.getPassword()
+  encryptedPassword = page.getPostParam('password') or nil
+  return encryptedPassword
+end
+
+
+function session.getUserFromAccount(email, encryptedPassword)
   email = email or page.getPostParam('email') or nil
-  password = password or page.getPostParam('password') or nil
-  return account.getUser(email, password)
+  encryptedPassword = encryptedPassword or session.getPassword() or nil
+  if not email or not encryptedPassword then return end
+  local user = account.getUser(email, encryptedPassword)
+  return user
 end
 
 
 function session.start(res)
+  page.encryptPassword()
   local user = session.getUserFromAccount()
   if not user then return end
   session.user = user

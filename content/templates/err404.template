@@ -21,7 +21,10 @@ a {color:#fff;}
 <h1>404</h1>
 <h2>Not Found</h2>
 <p>The resource could not be found</p>
-<p>{page_url}</p>
+<p>{{page.urlFields.urlFileName}}</p>
+<p>{{utils.getDateUTC}}</p>
+<p>using protocol '{{page.protocol}}' and method '{{req.method}}'</p>
+<p>Logged In Status: {{session.isLoggedIn}}</p>
 </div>
 <div id="footer">
 Powered by <a href="https://luvit.io">Luvit</a> and
