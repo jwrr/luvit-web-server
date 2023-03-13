@@ -11,7 +11,6 @@ local c = {}
 c.author='jwrr'
 -- c.body_class='text-center'
 c.css='/styles/bootstrap/signin.css'
-c.css_hack='img {height:200px;}'
 c.description='Index page for LWServer'
 c.title_site="LWServer"
 c.title_navbar=c.title_site

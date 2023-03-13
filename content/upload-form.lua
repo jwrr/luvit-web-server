@@ -13,14 +13,14 @@ c.body_class='text-center'
 c.css_external='/styles/bootstrap/signin.css'
 c.description='upload page to sign out of the LWServer'
 c.title_navbar="LWServer"
-c.please='Image Upload Form'
+c.header2='Image Upload Form'
 c.title_page='LWServer upload Page'
 
 c.html = [[
 
 <form  action="/upload" method="post" enctype="multipart/form-data">
   <img class="mb-4" src="/images/lua30.gif" alt="" width="72" height="72">
-  <h1 class="h3 mb-3 font-weight-normal">]] .. c.please .. [[</h1>
+  <h1 class="h3 mb-3 font-weight-normal">]] .. c.header2 .. [[</h1>
   <label for="inputUploader" class="sr-only">Uploader</label>
 
   <div class="form-group">
