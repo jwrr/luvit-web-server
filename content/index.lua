@@ -1,23 +1,20 @@
--- index.lua
+-- -- index.lua
 
 local srv=require'lws.srv'
 local bootstrap = require'content.bootstrap'
-
-local success = srv.session.continue(srv.res)
-
+local isLoggedIn = srv.session.continue(srv.res)
 local index = {}
 
 local c = {}
 c.author='jwrr'
--- c.body_class='text-center'
-c.css='/styles/bootstrap/signin.css'
 c.description='Index page for LWServer'
 c.title_site="LWServer"
 c.title_navbar=c.title_site
 c.title_page='LWServer Home Page'
+c.css_internal = 'body {padding-top:68px;} img {height:200px;}'
 
 c.html = [[
-
+<main class="col col-8 border p-3 rounded">
 <h1>Lua and Luvit Example using Bootstrap</h1>
 <p class="lead">
 I stumble upon <a href="https://luvit.io/">Luvit</a> while playing around with 
@@ -83,7 +80,7 @@ The <a href="https://github.com/p-h-c/phc-winner-argon2">Argon2</a> password has
 <li><a href="/examples/test4.html">Link to test4.html (should internally redirect to test4.template)</a></li>
 <li><a href="/examples/signin-form.html">Link to sign-in form</a></li>
 </ul>
-
+</main>
 ]]
 
 index.getHTML = function()

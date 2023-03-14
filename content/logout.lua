@@ -9,8 +9,6 @@ local login = {}
 
 local c = {}
 c.author='jwrr'
-c.body_class=''
-c.css_external=''
 c.description='Thank You!'
 c.title_navbar="LWServer"
 c.header2='Goodbye'
