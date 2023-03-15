@@ -105,91 +105,52 @@ function utils.getkeys(t)
 end
 
 
-function utils.tocsv(t, level, title, skips, upperkeys, columns, cnt)
-  skips = skips or tostring_skiptable or {}
+function utils.tocsv(convertthis_t, sep, level, title, skipthese_t, hierarchy_str, columns_t, rownum)
   level = level or 0
-  level = level + 1
+  if level > 10 then return 'STACK OVERFLOW' end
   title = title or ''
-  columns = columns or {}
-  upperkeys = upperkeys or ''
-  cnt = cnt or 1
-  local finalstr = ''
-  if level > 10 then
-    return finalstr .. ',STACK OVERFLOW'
-  end
-  for k,v in pairs(t) do
-    local skip = skips[k]
+  skipthese_t = skipthese_t or {}
+  hierarchy_str = hierarchy_str or ''
+  columns_t = columns_t or {}
+  rownum = rownum or 0
+  sep = sep or ','
+  for k,v in pairs(convertthis_t) do
+    local skip = skipthese_t[k]
     if not skip then
-      local keystr = tostring(k)
-
-      local fullkeystr = ''
-      local fullkeystr = keystr
-      if upperkeys ~= '' then
-        fullkeystr = upperkeys..'.'..keystr
-      end
-
+      local fullkey = hierarchy_str~='' and hierarchy_str..'.'..k or k
       if type(v) == 'table' then
-        local fullkeystr2 = ''
-        if (level > 1) then
-          fullkeystr2 = fullkeystr
+        if level == 0 then
+          rownum = rownum + 1
         end
-        local str = utils.tocsv(v, level, '', skips, fullkeystr2, columns, cnt)
-        if level==1 then
-          cnt = cnt + 1
-          local id = utils.rpad('{key{id}key}:='..tostring(cnt)..',', 20)
-          str = id..str
-        end
-        finalstr = finalstr .. str
-      elseif type(v) == 'function' then
-        finalstr = finalstr .. '"**function**",'
+        local fullkey_tmp = level > 0 and fullkey or ''
+        utils.tocsv(v, sep, level+1, '', skipthese_t, fullkey_tmp, columns_t, rownum)
       else
-        local s = (type(v)==string) and v or tostring(v)
-        if keystr:lower() == 'password' then
-          s = v:sub(-12)
+        local s = type(v) == 'function' and '**function**' or tostring(v)
+        if k:lower() == 'password' then
+          s = s:sub(-12)
         end
-        finalstr = finalstr .. '{key{'..fullkeystr..'}key}:=' .. utils.rpad(s..',', 24)
-        if not columns[fullkeystr] then
-          columns[fullkeystr] = {}
-        end
-        columns[fullkeystr][cnt] = s
+        columns_t[fullkey] = columns_t[fullkey] or {}
+        columns_t[fullkey][rownum] = s
       end
     end
   end
-  level = level - 1
-  
   if level == 0 then
-    print ("IN utils.tocsv level=0 BEFORE")
-    for cheader, cvalues in pairs(columns) do
-      print('KEY='..cheader)
-      for i,v in pairs(cvalues) do
-        print('  ['..tostring(i)..']='..tostring(v))
+    local cnames_t = utils.getkeys(columns_t)
+    local header_str = 'id'..sep..utils.join(cnames_t, sep)
+    local csvrows_t = {header_str}
+    for i = 1,rownum do
+      local row_t = {tostring(i)..sep}
+      for _,cname in ipairs(cnames_t) do
+        row_t[#row_t+1] = columns_t[cname][i] or ''
       end
+      csvrows_t[#csvrows_t+1] = utils.join(row_t, sep)
     end
-
-    print("CNT=",cnt)
-    local cnames = utils.getkeys(columns)
-    print("NUMCNAMES=",#cnames)
-    local header = utils.join(cnames, ',')
-    print("HEADER=",header)
-    local csv_str = header .. '\n'
-    for i = 1,cnt do
-      local s = ""
-      for c, cname in ipairs(cnames) do
-        local value = columns[cname][i] or ''
-        csv_str = csv_str .. value .. ','
-      end
-      csv_str = csv_str .. '\n'
-    end
-    print ("IN utils.tocsv level=0 AFTER. csv_str =") print(csv_str)
+    return utils.join(csvrows_t, '\n')
   end
-  
-  finalstr = finalstr..'\n'
-  return finalstr
 end
 
 
 math.randomseed(os.time())
-
 function utils.rand64(len)
   local base64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
   s = ""

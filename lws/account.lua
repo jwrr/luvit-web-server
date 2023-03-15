@@ -70,8 +70,7 @@ account.load = function(filename)
   filename = filename or page.rootpath.."/accounts.db"
   dofile(filename)
   account.db = db
-  print(utils.tostring(account.db))
-  print(utils.tocsv(account.db))
+  print(utils.tocsv(account.db, '\t| '))
   return
 end
 
