@@ -35,116 +35,156 @@ function utils.rpad(s, n)
   return str .. string.rep(' ', p)
 end
 
-
-
-utils.luaTable = {
-	["jwrr.com@gmail.com"] = {
-		["user"] =             "jwrr",
-		["password"] =         "1234",
-		["email"] =            "jwrr.com@gmail.com"
-	},
-	["jacob2@gmail.com"] = {
-		["user"] =             "jacob2",
-		["password"] =         "asdfasfasdf",
-		["email"] =            "jacob2@gmail.com"
-	}
-}
-
-
---[[
-function utils.tostring(t, indent, title)
-  if type(t) ~= 'table' then
-    return tostring(t)
-  end
-  indent = indent or 0
-  indent = indent + 1
-  title = title or ''
-  local indentStr = (indent > 0) and string.rep('\t', indent) or ''
-  local json = '{\n'
-  if indent > 10 then
-    return json .. indentStr .. 'STACK OVERFLOW\n' .. indentStr .. '}\n'
-  end
-  for k,v in pairs(t) do
-    local skip = tostring_skiptable[k]
-    if not skip then
-      local kStr = utils.rpad('"'..tostring(k)..'": ', 20)
-      json = json .. indentStr .. kStr
-      if type(v) == 'table' then
-        json = json .. utils.tostring(v, indent)
-      elseif type(v) == 'function' then
-        json = json .. '"**function**",\n'
-      else
-        local s = (type(v)==string) and v or tostring(v)
-        json = json .. '"' .. s .. '",\n'
-      end
-    end
-  end
-
-  json = json:gsub(',\n$', '\n')
-  indent = indent - 1
-  local comma = (indent>0) and ',' or ''
-  local indentStr = (indent > 0) and string.rep('\t', indent) or ''
-  if json:find('{\n$') then
-    json = json:gsub('{\n$', '{')
-    indentStr = ''
-  end
-  json = json .. indentStr .. '}' .. comma .. '\n'
-  return title .. json
-end
---]]
-
 local tostring_skiptable = {socket = 1, handlers = 2,}
 
-function utils.tostring(t, indent, title, format, skips)
+function utils.tostring(t, level, title, format, skips)
   skips = skips or tostring_skiptable or {}
   if type(t) ~= 'table' then
     return tostring(t)
   end
   format = format or 'json'
-  indent = indent or 0
-  indent = indent + 1
+  format = format:lower()
+  level = level or 0
+  level = level + 1
   title = title or ''
-  local indentStr = (indent > 0) and string.rep('\t', indent) or ''
-  local sss = '{\n'
-  if indent > 10 then
-    return sss .. indentStr .. 'STACK OVERFLOW\n' .. indentStr .. '}\n'
+  local indentstr = (level > 0) and string.rep('\t', level) or ''
+  local finalstr = '{\n'
+  if level > 10 then
+    return finalstr .. indentstr .. 'STACK OVERFLOW\n' .. indentstr .. '}\n'
   end
   for k,v in pairs(t) do
     local skip = skips[k]
     if not skip then
-      local kStr = tostring(k)
-      if format:lower() == "lua" then
-        local isValidIdentifier = kStr:find('^[%a_][%w_]*$')
+      local keystr = tostring(k)
+      if format == 'lua' then
+        local isValidIdentifier = keystr:find('^[%a_][%w_]*$')
         if isValidIdentifier then
-          kStr = utils.rpad(kStr..' = ', 20)
+          keystr = utils.rpad(keystr..' = ', 20)
         else
-          kStr = utils.rpad('["'..kStr..'"] = ', 20)
+          keystr = utils.rpad('["'..keystr..'"] = ', 20)
         end
       else -- default to json
-        kStr = utils.rpad('"'..tostring(kStr)..'": ', 20)
+        keystr = utils.rpad('"'..tostring(keystr)..'": ', 20)
       end
-      sss = sss .. indentStr .. kStr
+
+      finalstr = finalstr .. indentstr .. keystr
       if type(v) == 'table' then
-        sss = sss .. utils.tostring(v, indent, '', format, skips)
+        finalstr = finalstr .. utils.tostring(v, level, '', format, skips)
       elseif type(v) == 'function' then
-        sss = sss .. '"**function**",\n'
+        finalstr = finalstr .. '"**function**",\n'
       else
         local s = (type(v)==string) and v or tostring(v)
-        sss = sss .. '"' .. s .. '",\n'
+        finalstr = finalstr .. '"' .. s .. '",\n'
       end
     end
   end
 
-  sss = sss:gsub(',\n$', '\n')
-  indent = indent - 1
-  local comma = (indent>0) and ',' or ''
-  local indentStr = (indent > 0) and string.rep('\t', indent) or ''
-  if sss:find('{\n$') then
-    sss = sss:gsub('{\n$', '{')
-    indentStr = ''
+  finalstr = finalstr:gsub(',\n$', '\n')
+  level = level - 1
+  local comma = (level>0) and ',' or ''
+  local indentstr = (level > 0) and string.rep('\t', level) or ''
+  if finalstr:find('{\n$') then
+    finalstr = finalstr:gsub('{\n$', '{')
+    indentstr = ''
   end
-  sss = sss .. indentStr .. '}' .. comma .. '\n'
-  return title .. sss
+  finalstr = finalstr .. indentstr .. '}' .. comma .. '\n'
+
+  return title .. finalstr
+end
+
+
+function utils.getkeys(t)
+  if not t then return {} end
+  local keys = {}
+  local cnt = 0
+  for k,v in pairs(t) do
+    cnt = cnt + 1
+    keys[cnt] = k
+  end
+  return keys
+end
+
+
+function utils.tocsv(t, level, title, skips, upperkeys, columns, cnt)
+  skips = skips or tostring_skiptable or {}
+  level = level or 0
+  level = level + 1
+  title = title or ''
+  columns = columns or {}
+  upperkeys = upperkeys or ''
+  cnt = cnt or 1
+  local finalstr = ''
+  if level > 10 then
+    return finalstr .. ',STACK OVERFLOW'
+  end
+  for k,v in pairs(t) do
+    local skip = skips[k]
+    if not skip then
+      local keystr = tostring(k)
+
+      local fullkeystr = ''
+      local fullkeystr = keystr
+      if upperkeys ~= '' then
+        fullkeystr = upperkeys..'.'..keystr
+      end
+
+      if type(v) == 'table' then
+        local fullkeystr2 = ''
+        if (level > 1) then
+          fullkeystr2 = fullkeystr
+        end
+        local str = utils.tocsv(v, level, '', skips, fullkeystr2, columns, cnt)
+        if level==1 then
+          cnt = cnt + 1
+          local id = utils.rpad('{key{id}key}:='..tostring(cnt)..',', 20)
+          str = id..str
+        end
+        finalstr = finalstr .. str
+      elseif type(v) == 'function' then
+        finalstr = finalstr .. '"**function**",'
+      else
+        local s = (type(v)==string) and v or tostring(v)
+        if keystr:lower() == 'password' then
+          s = v:sub(-12)
+        end
+        finalstr = finalstr .. '{key{'..fullkeystr..'}key}:=' .. utils.rpad(s..',', 24)
+        if not columns[fullkeystr] then
+          columns[fullkeystr] = {}
+        end
+        columns[fullkeystr][cnt] = s
+      end
+    end
+  end
+  level = level - 1
+  
+  if level == 0 then
+    print ("IN utils.tocsv level=0 BEFORE")
+    for cheader, cvalues in pairs(columns) do
+      print('KEY='..cheader)
+      for i,v in pairs(cvalues) do
+        print('  ['..tostring(i)..']='..tostring(v))
+      end
+    end
+
+    print("CNT=",cnt)
+    local cnames = utils.getkeys(columns)
+    print("NUMCNAMES=",#cnames)
+    local header = utils.join(cnames, ',')
+    print("HEADER=",header)
+    local csv_str = header .. '\n'
+    for i = 1,cnt do
+      local s = ""
+      for c, cname in ipairs(cnames) do
+        local value = columns[cname][i] or ''
+        csv_str = csv_str .. value .. ','
+      end
+      csv_str = csv_str .. '\n'
+    end
+    print ("IN utils.tocsv level=0 AFTER. csv_str =") print(csv_str)
+  end
+  
+  finalstr = finalstr..'\n'
+  return finalstr
 end
 
 
@@ -175,6 +215,17 @@ function utils.split(s, sep)
     cnt = cnt + 1
   end
   return parts
+end
+
+
+function utils.join(t, sep)
+  if not t or not t[1] then return '' end
+  sep = sep or ' '
+  local s = t[1]
+  for i=2,#t do
+    s = s .. sep .. t[i]
+  end
+  return s
 end
 
 

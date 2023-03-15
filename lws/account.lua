@@ -71,6 +71,7 @@ account.load = function(filename)
   dofile(filename)
   account.db = db
   print(utils.tostring(account.db))
+  print(utils.tocsv(account.db))
   return
 end
 

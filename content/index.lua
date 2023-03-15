@@ -17,17 +17,17 @@ c.html = [[
 <main class="col col-8 border p-3 rounded">
 <h1>Lua and Luvit Example using Bootstrap</h1>
 <p class="lead">
-I stumble upon <a href="https://luvit.io/">Luvit</a> while playing around with 
-<a href="http://www.lua.org/">Lua</a>. Luvit is a reimplementation of
-<a href="https://nodejs.org">node.js</a> for <a href="https://luajit.org/">LuaJit</a>.
+This site runs on <a href="https://luvit.io/">Luvit</a>.
+Luvit is a reimplementation of
+<a href="https://nodejs.org">node.js</a> for 
+<a href="http://www.lua.org/">Lua</a>/<a href="https://luajit.org/">LuaJit</a>.
 </p>
 
-<p>Luvit is pretty cool and this is my first stab at using it to make a 
-website. If I had read the docs, instead of just diving in, then I would have 
+<p>If I had read the docs, instead of just diving in, then I would have 
 found <a href="https://github.com/creationix/weblit">Weblit</a> which pretty 
-much does everything I want.  I'm gonna keep plugging away at this project 
-because that's the way I roll. But if you're interested in a good starting 
-point for a Luvit-based web server, take a look at Weblit. Best of luck, JWRR.
+much does everything I want.  I'm gonna keep plugging away at this project. 
+But if you're interested in a good starting point for a Luvit-based web server,
+take a look at Weblit. Best of luck.
 
 <h2>Here are a few things that are supported</h2>
 
