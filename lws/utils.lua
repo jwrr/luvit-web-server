@@ -105,7 +105,7 @@ function utils.getkeys(t)
 end
 
 
-function utils.tocsv(convertthis_t, sep, level, title, skipthese_t, hierarchy_str, columns_t, rownum)
+function utils.tocsv(convertthis_t, sep, level, title, skipthese_t, hierarchy_str, columns_t, rownum, cnames_t)
   level = level or 0
   if level > 10 then return 'STACK OVERFLOW' end
   title = title or ''
@@ -114,6 +114,7 @@ function utils.tocsv(convertthis_t, sep, level, title, skipthese_t, hierarchy_st
   columns_t = columns_t or {}
   rownum = rownum or 0
   sep = sep or ','
+  cnames_t = cnames_t or {}
   for k,v in pairs(convertthis_t) do
     local skip = skipthese_t[k]
     if not skip then
@@ -121,27 +122,34 @@ function utils.tocsv(convertthis_t, sep, level, title, skipthese_t, hierarchy_st
       if type(v) == 'table' then
         if level == 0 then
           rownum = rownum + 1
+          columns_t['##'] = columns_t['##'] or {}
+          columns_t['##'][rownum] = rownum
         end
         local fullkey_tmp = level > 0 and fullkey or ''
-        utils.tocsv(v, sep, level+1, '', skipthese_t, fullkey_tmp, columns_t, rownum)
+        utils.tocsv(v, sep, level+1, '', skipthese_t, fullkey_tmp, columns_t, rownum, cnames_t)
       else
         local s = type(v) == 'function' and '**function**' or tostring(v)
         if k:lower() == 'password' then
           s = s:sub(-12)
         end
-        columns_t[fullkey] = columns_t[fullkey] or {}
+        if not columns_t[fullkey] then
+          columns_t[fullkey] = {}
+          cnames_t[1] = cnames_t[1] or '##'
+          cnames_t[#cnames_t+1] = fullkey
+        end
         columns_t[fullkey][rownum] = s
       end
     end
   end
   if level == 0 then
-    local cnames_t = utils.getkeys(columns_t)
-    local header_str = 'id'..sep..utils.join(cnames_t, sep)
+--  local cnames_t = utils.getkeys(columns_t)
+    print(utils.tostring(cnames_t))
+    local header_str = utils.join(cnames_t, sep)
     local csvrows_t = {header_str}
-    for i = 1,rownum do
-      local row_t = {tostring(i)..sep}
+    for rindex = 1,rownum do
+      local row_t = {}
       for _,cname in ipairs(cnames_t) do
-        row_t[#row_t+1] = columns_t[cname][i] or ''
+        row_t[#row_t+1] = columns_t[cname][rindex] or ''
       end
       csvrows_t[#csvrows_t+1] = utils.join(row_t, sep)
     end
