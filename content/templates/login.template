@@ -1,0 +1,38 @@
+{
+  "header"    : "Please log in",
+  "subheader" : "Enjoy more features when logged in",
+  "action"    : "/login",
+  "home-url"  : "/",
+  "home-txt"  : "Home",
+  "join-url"  : "/join-form",
+  "join-txt"  : "Join"
+}
+
+<!-- signin form -->
+<h2>{{header}}</h2>
+<p>{{subheader}}</p>
+<form action="{{action}}" method="post">
+  <div class="mb-3">
+    <label for="email-id" class="form-label">Email address</label>
+    <input name="email" type="email" class="form-control" id="email-id" aria-describedby="email-help" placeholder="Email address" required autofocus>
+    <div id="email-help" class="form-text">We'll never share your email with anyone else.</div>
+  </div>
+  <div class="mb-3">
+    <label for="password-id" class="form-label">Password</label>
+    <input name = "password" type="password" class="form-control" id="password-id" aria-describedby="password-help" placeholder="Password" required>
+    <div id="password-help" class="form-text">Passwords are encrypted for better security.</div>
+  </div>
+  <!--
+  <div class="form-check">
+    <input type="checkbox" class="form-check-input" id="check1">
+    <label name="remember" class="form-check-label" for="check1">Remember Me</label>
+  </div>
+  -->
+  <button type="submit" class="btn btn-primary">Enter</button>
+</form>
+<p class="mt-3 text-muted">
+  <a href='{{home-url}}'>{{home-txt}}</a> | 
+  <a href='{{join-url}}'>{{join-txt}}</a> 
+</p>
+<!-- end signin form -->
+

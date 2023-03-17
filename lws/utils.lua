@@ -93,6 +93,11 @@ function utils.tostring(t, level, title, format, skips)
 end
 
 
+function utils.keyexists(t, k)
+  return t and k and t[k] and true or false
+end
+
+
 function utils.getkeys(t)
   if not t then return {} end
   local keys = {}
