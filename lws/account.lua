@@ -6,10 +6,7 @@ local password=require'lws.password'
 local quickfind=require'lws.quickfind'
 local account = {}
 
-account.db = {}
 account.qf = quickfind.new({'email', 'user'})
-
-print(utils.tostring(account.qf))
 
 account.create = function(skipSave,k,v)
   if not k then
@@ -26,8 +23,7 @@ account.create = function(skipSave,k,v)
   if not v['email'] then return end
   if not v['user'] then return end
   if not v['password'] then return end
-  account.db[k] = v
-  local ok = quickfind.add(v)
+  local ok = quickfind.add(account.qf, v)
   if not ok then return end
   if skipSave then return true end
   ok = account.save()
@@ -37,7 +33,6 @@ end
 
 account.delete = function(skipSave,k)
   if not k then return end
-  account.db[k] = nil
   local ok = quickfind.deletebykey(account.qf, 'email', k)
   if skipSave then return true end
   return account.save()
@@ -46,20 +41,13 @@ end
 
 account.get = function(k)
   if not k then return end
-  if not account.db[k] then return end
-  -- quickfind.getbykey(account.qf, 'email', k) -- FIXME
-  return account.db[k]
+  local entry = quickfind.getbykey(account.qf, 'email', k)
+  return entry
 end
 
 
 account.update = function(skipSave, k, vtable)
-  if not k then return end
-  if not account.db[k] then return end
-  if not vtable then return end
-  for fieldk,fieldv in pairs(vtable) do
-    account.db[k][fieldk] = fieldv
-  end
-  quickfind.updatebykey(account.qf, 'email', vtable)
+  quickfind.updatebykey(account.qf, 'email', k, vtable)
   if skipSave then return true end
   return account.save()
 end
@@ -68,42 +56,38 @@ end
 account.save = function(filename)
   filename = filename or page.rootpath.."/accounts.db"
   if not filename then return end
-  local fileContent = utils.tostring(account.db, 0, 'db = ', 'lua')
-  -- FIXME local fileContent = utils.tostring(account.qf.data, 0, 'db = ', 'lua')
-  local success = utils.writeFile(filename, fileContent)
-  return success
+  local fileContent = utils.tostring(account.qf.data, 0, 'db = ', 'lua')
+  local ok = utils.writeFile(filename, fileContent)
+  return ok
 end
 
 
 account.load = function(filename)
   filename = filename or page.rootpath.."/accounts.db"
   dofile(filename)
-  account.db = db
-  -- fixme quickfind.load(account.qf, db)
-  print(utils.tocsv(account.db, '\t| '))
+  quickfind.load(account.qf, db)
+  print(utils.tocsv(account.qf.data, '\t||| '))
   return
 end
 
 
 function account.contains(k)
   if not k then return false end
-  -- FIXME quickfind.exists(account.qf, 'email', k)
-  return account.db[k] and true or false
+  local exists = quickfind.existsbykey(account.qf, 'email', k)
+  return exists
 end
 
 
 function account.containsField(k, f)
   if not k or not f then return false end
-  -- FIXME quickfind.exists(account.qf, 'email', k, f)
-  return account.db[k] and account.db[k][f] and true or false
+  local exists = quickfind.existsbykey(account.qf, 'email', k, f)
+  return exists
 end
 
 
 function account.getField(k, f)
-  if account.containsField(k, f) then
-    return account.db[k][f]
-  end
-  return
+  local field = quickfind.getbykey(account.qf, 'email' , k, f)
+  return field
 end
 
 

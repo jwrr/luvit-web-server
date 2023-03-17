@@ -40,15 +40,25 @@ quickfind.add = function(t,d)
   if not quickfind.uniq(t,d) then return end
   table.insert(t.data, d)
   local id = #t.data
-  for k,keyhash in pairs(t.keys) do
+  for k,_ in pairs(t.keys) do
     local dk = d[k]
-    keyhash[dk] = id
+    t.keys[k][dk] = id
   end
   return id
 end
 
 
-quickfind.iskey(t, k)
+quickfind.load = function(t, d_t)
+  if not t or not d_t then return end
+  for k,v in pairs(d_t) do
+    local ok = quickfind.add(t, v)
+    if not ok then return end
+  end
+  return true
+end
+
+
+quickfind.iskey = function(t, k)
   if not t or not t.keys then return end
   return t.keys[k] and true or false
 end
