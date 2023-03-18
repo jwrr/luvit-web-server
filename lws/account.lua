@@ -17,7 +17,7 @@ account.create = function(skipSave,k,v)
   k = string.lower(k)
   if not v then
     if not page.postParams then return end
-    page.encryptPassword()
+    page.encodePassword()
     v = page.postParams
   end
   if not v['email'] then return end
@@ -100,17 +100,20 @@ function account.validPassword(k, pw)
 end
 
 
-function account.validEncryptedPassword(k, encryptedPassword)
-  if not k or not encryptedPassword then return end
+function account.validEncodedPassword(k, encodedPassword)
+  if not k or not encodedPassword then return end
   local storedPassword = account.getField(k, 'password')
+  print('IN account.validEncodedPassword. k=', k)
+  print('  encodedPassword=', encodedPassword)
+  print('  storedPassword =', storedPassword)
   if not storedPassword then return end
-  local ok = encryptedPassword == storedPassword
+  local ok = encodedPassword == storedPassword
   return ok
 end
 
 
-function account.getUser(k, encryptedPassword)
-  if account.validEncryptedPassword(k, encryptedPassword) then
+function account.getUser(k, encodedPassword)
+  if account.validEncodedPassword(k, encodedPassword) then
     local user = account.getField(k, 'user')
     return user
   end

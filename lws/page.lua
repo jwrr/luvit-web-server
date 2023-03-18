@@ -59,12 +59,12 @@ function page.getPostParams()
 end
 
 
-function page.encryptPassword()
+function page.encodePassword()
   local pw = page.getPostParam('password')
   local email = page.getPostParam('email')
   if not pw or not email then return end
-  local encryptedPassword = password.encode(pw, email)
-  page.setPostParam('password', encryptedPassword)
+  local encodedPassword = password.encode(pw, email)
+  page.setPostParam('password', encodedPassword)
 end
 
 

@@ -35,7 +35,7 @@ c.html = [[
               <div class="mb-3">
                 <label for="password-id" class="form-label">Password</label>
                 <input name = "password" type="password" class="form-control" id="password-id" aria-describedby="password-help" placeholder="Password" required>
-                <div id="password-help" class="form-text">Passwords are encrypted for better security.</div>
+                <div id="password-help" class="form-text">Passwords are encoded for better security.</div>
               </div>
               <!--
               <div class="form-check">

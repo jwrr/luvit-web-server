@@ -10,27 +10,32 @@ local session = {}
 
 
 function session.getPassword()
-  encryptedPassword = page.getPostParam('password') or nil
-  return encryptedPassword
+  encodedPassword = page.getPostParam('password') or nil
+  return encodedPassword
 end
 
 
-function session.getUserFromAccount(email, encryptedPassword)
+function session.getUserFromAccount(email, encodedPassword)
   email = email or page.getPostParam('email') or nil
-  encryptedPassword = encryptedPassword or session.getPassword() or nil
-  if not email or not encryptedPassword then return end
-  local user = account.getUser(email, encryptedPassword)
+  print('IN session.getUserFromAccount. email=',email)
+  encodedPassword = encodedPassword or session.getPassword() or nil
+  print('In session.getUserFromAccount. encodedPassword=',encodedPassword)
+  if not email or not encodedPassword then return end
+  local user = account.getUser(email, encodedPassword)
+  print('In session.getUserFromAccount. user=',user)
   return user
 end
 
 
 function session.start(res)
-  page.encryptPassword()
+  page.encodePassword()
   local user = session.getUserFromAccount()
+  print("IN session.start. user=",user)
   if not user then return end
   session.user = user
   session.id = cookie.create(res)
   session_t = {userName = session.user, startTime = utils.now()}
+  print("IN session.start. user/sid=", session.user, session.id,'session_t=',utils.tostring(session_t))
   cookie.appendFields(session.id, session_t)
   return true
 end
