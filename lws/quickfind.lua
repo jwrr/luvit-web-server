@@ -192,9 +192,7 @@ end
 
 quickfind.getbykey = function(t, k, v, f)
   local id = quickfind.getid(t, k, v)
-  print('IN quickfind.getbykey: ',k,v,f,id)
   if not id or not t.data[id] then return end
-  print('IN quickfind.getbykey: ',k,v,f,id)
   return quickfind.getfield(t, id, f)
 end
 

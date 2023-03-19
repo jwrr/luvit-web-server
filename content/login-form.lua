@@ -19,8 +19,10 @@ login.getHTML = function()
     home_url      = "/",
     home_txt      = "Home",
     join_url      = "/join-form",
-    join_txt      = "Join"
+    join_txt      = "Join",
+    user          = page.getUser(),
   }
+  print('IN login-form.getHTML user=',user)
   return template.run(srv.page.sitepath..'/templates/page.template', srv, cfg)
 end
 

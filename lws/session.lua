@@ -32,9 +32,11 @@ end
 
 
 function session.start(res)
+  page.clearUser()
+  print("IN session.start1. user/pw=",user,page.getPassword())
   page.encodePassword()
   local user = session.getUserFromAccount(true)
-  print("IN session.start. user/pw=",user,page.getPassword())
+  print("IN session.start2. user/pw=",user,page.getPassword())
   if not user then return end
   session.user = user
   session.id = cookie.create(res)
@@ -46,12 +48,15 @@ end
 
 
 function session.continue(res)
+  page.clearUser()
   session.id = cookie.getCurrent()
   session.user = session.getUser(session.id)
+  
 end
 
 
 function session.stop(res)
+  page.clearUser()
   session.id = nil
   session.user = nil
   cookieName = cookieName or cookie.defaultName or 'sid'

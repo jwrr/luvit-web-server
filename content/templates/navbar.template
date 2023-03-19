@@ -3,6 +3,8 @@
   "brand_txt"       : "LWServer",
   "login_url"       : "/login-form",
   "login_txt"       : "Login",
+  "logout_url"       : "/logout",
+  "logout_txt"       : "Logout",
   "join_url"        : "/join-form",
   "join_txt"        : "Join",
   "like_url"        : "/like-form",
@@ -27,17 +29,26 @@
         <div class="container-fluid">
           <a class="navbar-brand" href="{{brand_url}}">{{brand_txt}}</a>
           <button class="navbar-toggler" type="button"
-            data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" 
+            data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle"
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto">
-              <li class="nav-item"><a class="nav-link active" href="{{login_url}}">{{login_txt}}</a></li>
-              <li class="nav-item"><a class="nav-link active" href="{{join_url}}">{{join_txt}}</a></li>
-              <li class="nav-item"><a class="nav-link disabled" href="{{like_url}}">{{like_txt}}</a></li>
-              <li class="nav-item"><a class="nav-link disabled" href="{{comment_url}}">{{comment_txt}}</a></li>
-              <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="{{manage_url}}" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{manage_txt}}</a>
+{{#user}}
+              <li class="nav-item"><a class="nav-link active" aria-current="page" href="/{{user}}">{{user}}</a></li>
+              <li class="nav-item"><a class="nav-link active" href="{{logout_url}}">{{logout_txt}}</a></li>
+              <li class="nav-item"><a class="nav-link active" href="{{like_url}}">{{like_txt}}</a></li>
+              <li class="nav-item"><a class="nav-link active" href="{{comment_url}}">{{comment_txt}}</a></li>
+{{/user}}
+{{^user}}
+              <li class="nav-item"><a class="nav-link active" href="/join-form">Join</a></li>
+              <li class="nav-item"><a class="nav-link active" href="/login-form">Login</a></li>
+              <li class="nav-item"><a class="nav-link disabled" href="#">Like</a></li>
+              <li class="nav-item"><a class="nav-link disabled" href="#">Comment</a></li>
+{{/user}}
+
+             <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="{{manage_url}}" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{manage_txt}}</a>
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item disabled" href="{{upload_url}}">{{upload_txt}}</a></li>
                   <li><a class="dropdown-item disabled" href="{{edit_url}}">{{edit_txt}}</a></li>

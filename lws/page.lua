@@ -58,9 +58,7 @@ function page.getPostParams(format)
   print('IN page.getPostParams. format=',format)
   format = format or 'array'
   if format ~= 'array' then
-    print('IN page.getPostParams, NOT ARRAY format=',format)
     if not page.postParams then return '' end
-    print('IN page.getPostParams, postParams EXISTS format=',format)
     return utils.tostring(page.postParams, 0, 'parms=', format)
   end
   if not page.postParams then return {} end
@@ -84,6 +82,11 @@ end
 
 function page.getUser()
   return page.user
+end
+
+
+function page.clearUser()
+  page.user = nil
 end
 
 
