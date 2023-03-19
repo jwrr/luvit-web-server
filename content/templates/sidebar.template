@@ -1,0 +1,11 @@
+
+    <!-- sidebar -->
+    <div class="card">
+      <div class="card-body bg-dark text-light">
+        Sidebar with Light Text on Dark Background. Lorem ipsum dolor sit amet
+        consectetur adipisicing elit. Omnis delectus nulla at neque! Nisi quis
+        quod quam qui mollitia vero optio, culpa tenetur modi adipisci. Facere
+        facilis officiis laborum nemo?
+      </div>
+    </div>
+

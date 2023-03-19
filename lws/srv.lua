@@ -26,6 +26,7 @@ function srv.getBody(req, res)
   srv.req = req
   srv.page = page
   srv.account = account
+  srv.template = template
 
   page.urlFields = page.getUrlFields(page.sitepath, req.url)
   local body = ''
@@ -58,7 +59,7 @@ function srv.getBody(req, res)
       elseif page.urlFields.fileType == 'html' then
         body = utils.slurp(page.urlFields.fullPathName) .. "\n" .. diag_str
       elseif page.urlFields.fileType == 'template' then
-        body = template.replace(req, res, page.urlFields, page.urlFields.fullPathName, srv)
+        body = template.run(page.urlFields.fullPathName, srv)
       elseif page.urlFields.fileType == 'md' then
         local markdownTemplateFile = page.sitepath .. '/templates/markdown.template'
         body = utils.slurp(page.urlFields.fullPathName)
@@ -71,6 +72,7 @@ function srv.getBody(req, res)
 --       end
     end
   else
+    print('IN srv: before err.handler. req.url=',req.url)
     body = err.handler(req, res, page.urlFields, 404, page.sitepath, srv)
   end
   mime.setHeader(res)

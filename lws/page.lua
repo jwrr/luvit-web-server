@@ -33,7 +33,7 @@ function page.getQuery(query)
   local q_t = {}
   for q in string.gmatch(query, "[^&]+") do
     local k = q:gsub('=.*', '')
-    local v = q:gsub('[^=]*=', '')
+    local v = q:gsub('[^=]email*=', '')
     q_t[k] = v
   end
   return q_t
@@ -45,6 +45,7 @@ function page.setPostParam(k, v)
   page.postParams[k] = v
 end
 
+
 function page.getPostParam(key)
   if page.postParams and page.postParams[key] then
     return page.postParams[key]
@@ -53,7 +54,15 @@ function page.getPostParam(key)
 end
 
 
-function page.getPostParams()
+function page.getPostParams(format)
+  print('IN page.getPostParams. format=',format)
+  format = format or 'array'
+  if format ~= 'array' then
+    print('IN page.getPostParams, NOT ARRAY format=',format)
+    if not page.postParams then return '' end
+    print('IN page.getPostParams, postParams EXISTS format=',format)
+    return utils.tostring(page.postParams, 0, 'parms=', format)
+  end
   if not page.postParams then return {} end
   return page.postParams
 end
@@ -65,6 +74,16 @@ function page.encodePassword()
   if not pw or not email then return end
   local encodedPassword = password.encode(pw, email)
   page.setPostParam('password', encodedPassword)
+end
+
+
+function page.getPassword()
+  return page.getPostParam(password)
+end
+
+
+function page.getUser()
+  return page.user
 end
 
 
@@ -120,7 +139,7 @@ end
 function page.convertMarkdown(req, res, urlFields, markdownTemplateFile, body, srv)
   local middle, metadata = lcmark.convert(body, "html", {smart = true})
   urlFields.markdown = middle
-  local html = template.replace(req, res, urlFields, markdownTemplateFile, srv)
+  local html = template.run(markdownTemplateFile, srv)
   return html
 end
 
@@ -137,10 +156,10 @@ function page.getHeaders(req)
 end
 
 
-
 function page.getCookies(cookieString)
   return utils.splitKV(cookieString)
 end
+
 
 
 -- function page.init(req)

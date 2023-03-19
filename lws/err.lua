@@ -8,7 +8,7 @@ local err = {}
 function err.handler(req, res, urlFields, errCode, contentDir, srv)
   res.statusCode = errCode
   local errTemplate = contentDir .. '/templates/err' .. tostring(errCode) .. '.template'
-  local html = template.replace(req, res, urlFields, errTemplate, srv)
+  local html = template.run(errTemplate, srv)
   if html == '' then
     html = 'Error ' .. string(errCode) .. '\n'
   end

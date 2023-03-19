@@ -23,13 +23,8 @@ local brotli=require'lws.brotli'
 local utils=require'lws.utils'
 local upload=require'lws.upload'
 
-local function onRequest(req, res)
-  page.protocol = 'https'
-  page.sitepath = rootpath..'/content'
-  body = srv.getBody(req, res)
-  res:finish(body)
-end
 
+local items = {};
 
 function map(a, fcn)
   a = a or {}
@@ -39,9 +34,6 @@ function map(a, fcn)
   end
   return b
 end
-
-
-local items = {};
 
 function show(res)
   local html = '<html><head><title>Todo List</title></head><body>\n'
@@ -70,36 +62,19 @@ function add(req, res)
     --p(obj)
     table.insert(items,obj.item);
     parse.
-
     show(res);
   end);
 end
 
 
-function handlePOST(req, res)
-  local postQuery = '';
-  --req.setEncoding('utf8');
-  req:on('data', function(chunk) postQuery = postQuery .. chunk; end);
-  req:on('end', function()
-    local obj = qs.parse(postQuery);
-    --p(obj)
-    table.insert(items,obj.item);
-
-    page.postQuery = utils.decodeURL(postQuery)
-    page.postParams = utils.splitKV(page.postQuery, '&', '=')
-    page.requestParams = page.postParams
-    local json = utils.tostring(page.postParams)
-    body = srv.getBody(req, res)
-    res:setHeader('Content-Type', 'text/html');
-    res:setHeader('Content-Length', #body);
-    res:finish(body);
-  end);
-end
+-- ====================================================================
+-- ====================================================================
 
 
-http.createServer(function (req, res)
-  page.protocol = 'http'
+local function onRequest(req, res, protocol)
+  page.protocol = protocol
   page.sitepath = rootpath..'/content'
+    print("IN http.createServer method=",req.method)
 
   if req.url=='/upload' then
     upload.handleUpload(req, res)
@@ -119,13 +94,43 @@ http.createServer(function (req, res)
       res:finish(body)
     end
   end
+end
+
+
+function handlePOST(req, res)
+  local postQuery = '';
+  --req.setEncoding('utf8');
+  req:on('data', function(chunk) postQuery = postQuery .. chunk; end);
+  req:on('end', function()
+    local obj = qs.parse(postQuery);
+    --p(obj)
+    table.insert(items,obj.item);
+
+    page.postQuery = utils.decodeURL(postQuery)
+    print("IN handlePOST postQuery=",page.postQuery)
+    page.postParams = utils.splitKV(page.postQuery, '&', '=')
+    page.requestParams = page.postParams
+    local json = utils.tostring(page.postParams)
+    body = srv.getBody(req, res)
+    res:setHeader('Content-Type', 'text/html');
+    res:setHeader('Content-Length', #body);
+    res:finish(body);
+  end);
+end
+
+
+http.createServer(function(req,res)
+  onRequest(req, res, 'http')
 end):listen(80)
 
 
 https.createServer({
   key = fs.readFileSync("/var/www/html/key.pem"),
   cert = fs.readFileSync("/var/www/html/cert.pem"),
-}, onRequest):listen(443)
+}, function(req,res)
+  onRequest(req,res,'https')
+end):listen(443)
+
 
 print("Server listening at https://localhost:443/")
 print('Server running at http://localhost:80/')

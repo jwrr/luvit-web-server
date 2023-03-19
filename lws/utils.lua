@@ -3,7 +3,11 @@
 local utils = {}
 
 function utils.slurp(file)
-  local f = assert(io.open(file, 'rb'))
+  local f = io.open(file, 'rb')
+  if not f then 
+    print("IN utils.slurp: Error opening '"..file.."'")
+    return ''
+  end
   local content = f:read('*all')
   f:close()
   return content
@@ -176,17 +180,18 @@ function utils.rand64(len)
 end
 
 
-function utils.split(s, sep)
+function utils.split(s, sep, max)
+  if not s then return {} end
+  max = max or -1
   sep = sep or '%w'
   local notsep = '[^' .. sep .. ']+'
   local parts = {}
-  local cnt = 0
-  if not s then
-    return parts
-  end
   for piece in string.gmatch(s, notsep) do
-    parts[#parts+1] = piece
-    cnt = cnt + 1
+    if #parts == max then
+      parts[#parts] = parts[#parts] .. sep .. piece
+    else
+      parts[#parts+1] = piece
+    end
   end
   return parts
 end
@@ -275,8 +280,10 @@ function utils.lastWord(s)
 end
 
 
-function utils.trim(s)
-  return s:gsub("^%s+", ""):gsub("%s+$", "")
+function utils.trim(s, trimstr)
+  if not s then return '' end
+  local trimstr = trimstr or '%s+'
+  return s:gsub("^"..trimstr, ""):gsub(trimstr.."$", "")
 end
 
 
@@ -285,23 +292,57 @@ function utils.rtrim(s)
 end
 
 
+function utils.ltrim(s)
+  return s:gsub("^%s+", "")
+end
+
+
 function utils.removeCRLF(s)
    return s:gsub("\r\n$", "")
 end
 
 
--- Returns hash of matches with number of occurrences for each match.
-function utils.getMatches(haystack, needle)
+function utils.escapeMagic(s)
+  return (s:gsub('[%^%$%(%)%%%.%[%]%*%+%-%?]','%%%1'))
+end
+
+
+-- Returns array of matches with number of occurrences for each match.
+function utils.getMatches(haystack, needle, max)
+  local max = max or 0
   if not haystack or not needle then return {} end
   local matches = {}
   for m in string.gmatch(haystack, needle) do
-    matches[m] = matches[m] and matches[m] + 1 or 1;
+    matches[#matches+1] = m
+    if #matches == max then break end
   end
   return matches
 end
 
 
-function utils.splitKV(kvstr, sepOuter, sepInner)
+function utils.getMatch(haystack, needle)
+  local matches = utils.getMatches(haystack, needle, 1)
+  return matches[1]
+end
+
+
+-- Returns hash of matches with number of occurrences for each match.
+function utils.getMatchesAndCnt(haystack, needle, max)
+  local max = max or 0
+  if not haystack or not needle then return {} end
+  local matches = {}
+  local cnt = 0
+  for m in string.gmatch(haystack, needle) do
+    matches[m] = matches[m] and matches[m] + 1 or 1;
+    cnt = cnt + 1
+    if cnt == max then break end
+  end
+  return matches
+end
+
+
+function utils.splitKV(kvstr, sepOuter, sepInner, removeQuotes)
+  removeQuotes = removeQuotes or false
   if kvstr == nil then
     return {}
   end
@@ -312,16 +353,22 @@ function utils.splitKV(kvstr, sepOuter, sepInner)
   local c = utils.split(kvstr, sepOuter)
 
   kv_t = {}
+  local cnt = 0
   for i,s in ipairs(c) do
-    local kv = utils.split(s, sepInner)
+    local kv = utils.split(s, sepInner,2)
     local k = utils.trim(kv[1])
     local v = utils.trim(kv[2])
     if not kv_t[k] then -- if multiple then take only the first
+      if removeQuotes then
+        k = utils.trim(k, '"', 1)
+        v = utils.trim(v, '"', 1)
+      end
       kv_t[k] = v
+      cnt = cnt + 1
     end
   end
 
-  return kv_t
+  return kv_t, cnt
 end
 
 

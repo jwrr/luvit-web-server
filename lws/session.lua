@@ -15,7 +15,8 @@ function session.getPassword()
 end
 
 
-function session.getUserFromAccount(email, encodedPassword)
+function session.getUserFromAccount(setPage, email, encodedPassword)
+  print(page.getPostParams('json'))
   email = email or page.getPostParam('email') or nil
   print('IN session.getUserFromAccount. email=',email)
   encodedPassword = encodedPassword or session.getPassword() or nil
@@ -23,14 +24,17 @@ function session.getUserFromAccount(email, encodedPassword)
   if not email or not encodedPassword then return end
   local user = account.getUser(email, encodedPassword)
   print('In session.getUserFromAccount. user=',user)
+  if setPage then
+    page.user = user
+  end
   return user
 end
 
 
 function session.start(res)
   page.encodePassword()
-  local user = session.getUserFromAccount()
-  print("IN session.start. user=",user)
+  local user = session.getUserFromAccount(true)
+  print("IN session.start. user/pw=",user,page.getPassword())
   if not user then return end
   session.user = user
   session.id = cookie.create(res)

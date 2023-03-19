@@ -1,31 +1,31 @@
 {
-  "brand-url"       : "/",
-  "brand-txt"       : "LWServer",
-  "login-url"       : "/login-form",
-  "login-txt"       : "Login",
-  "join-url"        : "/join-form",
-  "join-txt"        : "Join",
-  "like-url"        : "/like-form",
-  "like-txt"        : "Like",
-  "comment-url"     : "/comment-form",
-  "comment-txt"     : "Comment",
-  "manage-url"      : "#",
-  "manage-txt"      : "Manage",
-  "upload-url"      : "/upload-form",
-  "upload-txt"      : "New",
-  "edit-url"        : "/edit-form",
-  "edit-txt"        : "Edit",
-  "update-url"      : "/join-form",
-  "update-txt"      : "Update Account",
-  "search-url"      : "/search",
-  "search-txt"      : "Search",
-  "search-placeholder" : "Search",
+  "brand_url"       : "/",
+  "brand_txt"       : "LWServer",
+  "login_url"       : "/login-form",
+  "login_txt"       : "Login",
+  "join_url"        : "/join-form",
+  "join_txt"        : "Join",
+  "like_url"        : "/like-form",
+  "like_txt"        : "Like",
+  "comment_url"     : "/comment-form",
+  "comment_txt"     : "Comment",
+  "manage_url"      : "#",
+  "manage_txt"      : "Manage",
+  "upload_url"      : "/upload-form",
+  "upload_txt"      : "New",
+  "edit_url"        : "/edit-form",
+  "edit_txt"        : "Edit",
+  "update_url"      : "/join-form",
+  "update_txt"      : "Update Account",
+  "search_url"      : "/search",
+  "search_txt"      : "Search",
+  "search_placeholder" : "Search",
 }
 
     <!-- fixed navbar -->
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
         <div class="container-fluid">
-          <a class="navbar-brand" href="{{brand-url}}">{{brand-txt}}</a>
+          <a class="navbar-brand" href="{{brand_url}}">{{brand_txt}}</a>
           <button class="navbar-toggler" type="button"
             data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" 
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle"
@@ -33,22 +33,22 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto">
-              <li class="nav-item"><a class="nav-link active" href="{{login-url}}">{{login-txt}}</a></li>
-              <li class="nav-item"><a class="nav-link active" href="{{join-url}}">{{join-txt}}</a></li>
-              <li class="nav-item"><a class="nav-link disabled" href="{{like-url}}">{{like-txt}}</a></li>
-              <li class="nav-item"><a class="nav-link disabled" href="{{comment-url}}">{{comment-txt}}</a></li>
-              <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="{{manage-url}}" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{manage-txt}}</a>
+              <li class="nav-item"><a class="nav-link active" href="{{login_url}}">{{login_txt}}</a></li>
+              <li class="nav-item"><a class="nav-link active" href="{{join_url}}">{{join_txt}}</a></li>
+              <li class="nav-item"><a class="nav-link disabled" href="{{like_url}}">{{like_txt}}</a></li>
+              <li class="nav-item"><a class="nav-link disabled" href="{{comment_url}}">{{comment_txt}}</a></li>
+              <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="{{manage_url}}" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{manage_txt}}</a>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item disabled" href="{{upload-url}}">{{upload-txt}}</a></li>
-                  <li><a class="dropdown-item disabled" href="{{edit-url}}">{{edit-txt}}</a></li>
+                  <li><a class="dropdown-item disabled" href="{{upload_url}}">{{upload_txt}}</a></li>
+                  <li><a class="dropdown-item disabled" href="{{edit_url}}">{{edit_txt}}</a></li>
                   <li><hr class="dropdown-divider" Disabled></li>
-                  <li><a class="dropdown-item disabled" href="{{update-url}}" disabled>{{update-txt}}</a></li>
+                  <li><a class="dropdown-item disabled" href="{{update_url}}" disabled>{{update_txt}}</a></li>
                 </ul>
               </li>
             </ul>
             <form class="d-flex" role="search">
-              <input class="form-control me-2" type="search" placeholder="search-placeholder" aria-label="Search">
-              <button class="btn btn-outline-success" type="submit">{{search-txt}}</button>
+              <input class="form-control me-2" type="search" placeholder="{{search_placeholder}}" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">{{search_txt}}</button>
             </form>
           </div>
         </div>
