@@ -3,9 +3,9 @@
   description   = "Welcome to our site. This is the err404 page.",
   author        = "JWRR",
   main_template = "err404.template",
-  header        = "404"
-  subheader     = "Not Found"
-  text          = "The resource could not be found"
+  header        = "404",
+  subheader     = "Not Found",
+  text          = "The resource could not be found",
   home_url      = "/",
   home_txt      = "Home",
   login_url     = "/login-form",
@@ -13,19 +13,21 @@
   join_url      = "/join-form",
   join_txt      = "Join"
 }
-<div id="center">
-  <h1>{{header}}</h1>
-  <h2>{{subheader}}</h2>
-  <p>{{text}}</p>
-  <p>{{page.urlFields.urlFileName}}</p>
-  <p>{{utils.getDateUTC}}</p>
-  <p>using protocol '{{page.protocol}}' and method '{{req.method}}'</p>
-  <p>Logged In Status: {{session.isLoggedIn}}</p>
+  <div class="text-center">
+    <h1>{{header}}</h1>
+    <h2>{{subheader}}</h2>
+    <p>{{text}}</p>
+    <p>{{page.urlFields.urlFileName}}</p>
+    <p>{{utils.getDateUTC}}</p>
+    <p>using protocol '{{page.protocol}}' and method '{{req.method}}'</p>
+    <p>Logged In Status: {{session.isLoggedIn}}</p>
   </div>
-  <div id="footer">
-    Powered by <a href="https://lua.org">Lua</a>. <a href="https://luvit.io">Luvit</a> and
-    <a href="https://github.com/jwrr/lwserver">LWServer</a>
+
+  <div class="card">
+    <div class="card-body bg-dark text-light fs-3">
+      Powered by <a href="https://lua.org">Lua</a>. <a href="https://luvit.io">Luvit</a> and
+      <a href="https://github.com/jwrr/luvit-web-server">LWServer</a>
+    </div>
   </div>
-</div>
 
 

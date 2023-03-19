@@ -12,6 +12,7 @@ local mime = require'lws.mime'
 local cookie = require'lws.cookie'
 local session = require'lws.session'
 local account = require'lws.account'
+local err404 = require'content.err404'
 
 local srv = {}
 
@@ -73,7 +74,8 @@ function srv.getBody(req, res)
     end
   else
     print('IN srv: before err.handler. req.url=',req.url)
-    body = err.handler(req, res, page.urlFields, 404, page.sitepath, srv)
+    body = err404.getHTML(srv)
+--    err.handler(req, res, page.urlFields, 404, page.sitepath, srv)
   end
   mime.setHeader(res)
   res:setHeader('Content-Length', #body)
